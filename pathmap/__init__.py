@@ -8,6 +8,4 @@ from .pathmap import (
     resolve_paths
 )
 
-__author__ = """Thordur Hermannsson"""
-__email__ = 'doddi@kott.is'
 __version__ = '0.1.0'
