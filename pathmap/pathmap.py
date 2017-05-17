@@ -5,6 +5,9 @@ import os
 relpath = os.path.relpath
 
 def longest_common_substring(s1, s2):
+    """
+    Finds the longest common substring for s1 in s2
+    """
    m = [[0] * (1 + len(s2)) for i in range(1 + len(s1))]
    longest, x_longest = 0, 0
    for x in range(1, 1 + len(s1)):
@@ -25,6 +28,12 @@ def clean_path(path):
                    .replace('\\ ', ' ')
                    .replace('\\', '/'))
     return path
+
+def slash_pattern(pattern):
+    """
+    Checks if pattern ends with a slash and appends one if slash is not present
+    """
+    return pattern if pattern.endswith('/') else '%s/' % pattern
 
 def extract_match(toc, index):
     length = len(toc)
@@ -47,7 +56,7 @@ def resolve_path(toc, path, resolvers):
     # known changes
     for (remove, add) in resolvers:
         if path.startswith(remove):
-            _path = ',{}{},'.format(add, path.remove(rm, ''))
+            _path = ',{}{},'.format(add, path.replace(remove, ''))
             if _path in toc:
                 return _path[1:-1], None
 
@@ -65,7 +74,7 @@ def resolve_path(toc, path, resolvers):
         return new_path, pattern
 
     # not found
-    return None
+    return None, None
 
 
 def resolve_path_if_long(toc, path):
@@ -83,8 +92,12 @@ def resolve_path_if_long(toc, path):
         match = extract_match(toc, index)
         # Remove pattern
         rm_pattern  = path.replace(loc, '')
+        if rm_pattern:
+            rm_pattern = slash_pattern(rm_pattern)
         # Add pattern
         add_pattern = match.replace(loc, '')
+        if add_pattern:
+            add_pattern = slash_pattern(add_pattern)
         return match, (rm_pattern, add_pattern)
     else:
         return None, None
@@ -92,15 +105,16 @@ def resolve_path_if_long(toc, path):
 def resolve_path_if_short(toc, path):
     # Doddies short path fix concept
     index = toc.find(path)
-    length = len(toc)
     if index != -1:
-        return extract_match(toc, index), None
+        match = extract_match(toc,index)
+        pattern = match.replace(path, '')
+        return extract_match(toc, index), ('', pattern)
     else:
         return None, None
 
 def resolve_path_if_obscure(toc, path):
     # maybe regexp style resolving and take the longest discovered pathname
-    pass
+    return None, None
 
 
 def resolve_paths(toc, paths):
@@ -114,6 +128,8 @@ def resolve_paths(toc, paths):
     for path in paths:
         (new_path, resolve) = resolve_path(toc, path, resolvers)
         if new_path:
+            # Remove the path from toc
+            toc = toc.replace(new_path, '')
             # yield the match
             yield new_path
             # add known resolve
@@ -121,4 +137,3 @@ def resolve_paths(toc, paths):
                 resolvers.append(resolve)
         else:
             yield None
-
