@@ -7,6 +7,11 @@ relpath = os.path.relpath
 def longest_common_substring(s1, s2):
     """
     Finds the longest common substring for s1 in s2
+
+    :s1 (str) Substring to search for
+    :s2 (str) String to search in
+
+    returns the longest common substring
     """
     m = [[0] * (1 + len(s2)) for i in range(1 + len(s1))]
     longest, x_longest = 0, 0
@@ -32,10 +37,22 @@ def clean_path(path):
 def slash_pattern(pattern):
     """
     Checks if pattern ends with a slash and appends one if slash is not present
+
+    :pattern (str) pattern added/removed
+
+    returns a pattern with slash
     """
     return pattern if pattern.endswith('/') else '%s/' % pattern
 
 def extract_match(toc, index):
+    """
+    Extracts a path between seperators (,)
+
+    :toc (str) Table of contents
+    :index (int) Index of match 
+
+    returns full path from match
+    """
     length = len(toc)
     start_index = index
     while toc[start_index] != ',' and start_index >= 0:
@@ -49,6 +66,15 @@ def extract_match(toc, index):
 
 
 def resolve_path(toc, path, resolvers):
+    """
+    Resolve a path
+
+    :toc (str) Table of contents
+    :path (str) The path to be resolved
+    :resolvers (list) Resolved changes
+
+    returns new_path (str), pattern (list)
+    """
     # direct match
     if ',{},'.format(path) in toc:
         return path, None
@@ -80,6 +106,11 @@ def resolve_path(toc, path, resolvers):
 def resolve_path_if_long(toc, path):
     """
     Resolves a long path, e.g.: very/long/path.py => long/path.py
+
+    :toc (str) Table of contents
+    :path (str) Path to resolve
+
+    returns new_path (str), pattern (list)
     """
     # maybe regexp style resolving and take the longest discovered pathname
 
@@ -103,12 +134,17 @@ def resolve_path_if_long(toc, path):
         return None, None
 
 def resolve_path_if_short(toc, path):
-    # Doddies short path fix concept
+    """
+    Resolve short path e.g.: short/path.py => /very/long/path.py
+
+    :toc (str) Table of contents
+    :path (str) Path to resolve
+    """
     index = toc.find(path)
     if index != -1:
         match = extract_match(toc,index)
-        pattern = match.replace(path, '')
-        return extract_match(toc, index), ('', pattern)
+        add_pattern = match.replace(path, '')
+        return match, ('', add_pattern)
     else:
         return None, None
 

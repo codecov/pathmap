@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from .pathmap import (
+    longest_common_substring,
     clean_path, 
     resolve_path, 
     resolve_path_if_long, 
