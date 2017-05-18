@@ -69,7 +69,6 @@ def test_resolve_path():
     assert new_path == 'src/components/login.js'
     assert pattern  == ('', 'src/')
 
-
 def test_resolve_paths():
     resolved_paths = resolve_paths(toc, before)
     assert set([r for r in resolved_paths]) == set(after)
