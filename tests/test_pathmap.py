@@ -52,24 +52,24 @@ toc = ','.join(map(lambda x: "" if x == None else x, after))
 
 # ========= END Mock data ==========
 
-def test_longest_common_substring(benchmark):
+def test_longest_common_substring():
     files = ",".join(get_file_fixture())
-    result = benchmark(longest_common_substring, 'web/css/source/_module.less', toc)
+    result = longest_common_substring('web/css/source/_module.less', toc)
 
-def test_resolve_path_if_long(benchmark):
+def test_resolve_path_if_long():
     path = '/Users/user/owner/repo/dist/components/login.js'
-    (new_path, pattern) = benchmark(resolve_path_if_long, toc, path)
+    (new_path, pattern) = resolve_path_if_long(toc, path)
     assert new_path == 'src/components/login.js'
     assert pattern == ('/Users/user/owner/repo/dist/','src/')
 
-def test_resolve_path(benchmark):
+def test_resolve_path():
     # short to long
     path = 'components/login.js'
-    (new_path, pattern) = benchmark(resolve_path, toc, path, [])
+    (new_path, pattern) = resolve_path(toc, path, [])
     assert new_path == 'src/components/login.js'
     assert pattern  == ('', 'src/')
 
 
-def test_resolve_paths(benchmark):
-    resolved_paths = benchmark(resolve_paths, toc, before)
+def test_resolve_paths():
+    resolved_paths = resolve_paths(toc, before)
     assert set([r for r in resolved_paths]) == set(after)
