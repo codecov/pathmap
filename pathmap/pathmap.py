@@ -2,29 +2,14 @@
 
 import os
 
-from Levenshtein import editops, matching_blocks
+from lcs import longest_common_substring
+
+from Levenshtein import editops, matching_blocks, opcodes
+from operator import itemgetter
+
+from difflib import SequenceMatcher
 
 relpath = os.path.relpath
-
-def longest_common_substring(s1, s2):
-    """
-    Finds the longest common substring for s1 in s2
-
-    :s1 (str) Substring to search for
-    :s2 (str) String to search in
-
-    returns the longest common substring
-    """
-    match = matching_blocks(editops(s1, s2), len(s1), len(s2))
-    if len(match):
-        hit = match[len(match) - 2]
-        index  = hit[1]
-        length = hit[2]
-        substr = s2[index:index+length]
-        return substr
-    return None
-
-
 
 def clean_path(path):
     path = relpath(path.strip()

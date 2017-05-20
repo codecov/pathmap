@@ -2,7 +2,8 @@ import random
 import time
 
 from pathmap import (
-    longest_common_substring
+    longest_common_substring,
+    resolve_paths
 )
 
  
@@ -35,7 +36,17 @@ def main():
     toc = ','.join(get_file_fixture())
     print('Benchmark function: longest_common_substring')
     with Timer():
-        longest_common_substring('something/var/.htaccess', toc)
+        longest = longest_common_substring('something/var/.htaccess', toc)
+    mock_paths = [
+        '../google/Auth/Abstract.php',
+        'grid.phtml',
+        'Entity/Attribute/Frontend/CardType.php'
+    ]
+    resolved = []
+    print('Benchmark function: resolve_paths')
+    with Timer():
+        resolved = resolve_paths(toc, mock_paths)
 
+    print(list([r for r in resolved]))
 if __name__ == '__main__':
     main()

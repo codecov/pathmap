@@ -3,6 +3,13 @@
 
 from setuptools import setup
 
+from distutils.core import setup, Extension
+
+module1 = Extension(
+    'lcs', 
+    sources = ['pathmap/lcsmodule.c']
+)
+
 with open('README.md') as readme_file:
     readme = readme_file.read()
 
@@ -21,17 +28,18 @@ setup(
     long_description=readme + '\n\n',
     author="Thordur Hermannsson",
     author_email='doddi@kott.is',
-    url='https://github.com/naglalakk/revolver',
+    url='https://github.com/codecov/pathma://github.com/codecov/pathmap',
+    ext_modules = [module1],
     packages=[
-        'revolver',
+        'pathmap',
     ],
-    package_dir={'revolver':
-                 'revolver'},
+    package_dir={'pathmap':
+                 'pathmap'},
     include_package_data=True,
     install_requires=requirements,
     license="Apache Software License 2.0",
     zip_safe=False,
-    keywords='revolver',
+    keywords='pathmap',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
