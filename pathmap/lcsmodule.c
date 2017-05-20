@@ -81,6 +81,7 @@ lcs(PyObject* self, PyObject* args)
 
     PyObject *ret = Py_BuildValue("s", substr, longest+1);
 
+	free(substr);
     return ret;
 }
 
