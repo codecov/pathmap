@@ -8,11 +8,13 @@ from operator import itemgetter
 relpath = os.path.relpath
 
 def clean_path(path):
-    path = relpath(path.strip()
-                   .replace('**/','')
-                   .replace('\r', '')
-                   .replace('\\ ', ' ')
-                   .replace('\\', '/'))
+    path = relpath(
+        path.strip()
+            .replace('**/','')
+            .replace('\r', '')
+            .replace('\\ ', ' ')
+            .replace('\\', '/')
+    )
     return path
 
 def slash_pattern(pattern):
@@ -76,10 +78,6 @@ def resolve_path(toc, path, resolvers):
     if new_path:
         return new_path, pattern
 
-    (new_path, pattern) = resolve_path_if_obscure(toc, path)
-    if new_path:
-        return new_path, pattern
-
     # not found
     return None, None
 
@@ -128,11 +126,6 @@ def resolve_path_if_short(toc, path):
         return match, ('', add_pattern)
     else:
         return None, None
-
-def resolve_path_if_obscure(toc, path):
-    # maybe regexp style resolving and take the longest discovered pathname
-    return None, None
-
 
 def resolve_paths(toc, paths):
     """

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from .pathmap import (
-    longest_common_substring,
     clean_path, 
+    slash_pattern,
+    extract_match,
     resolve_path, 
     resolve_path_if_long, 
     resolve_path_if_short, 
-    resolve_path_if_obscure,
     resolve_paths
 )
 
