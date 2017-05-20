@@ -115,8 +115,16 @@ moduleinit(void)
     return m;
 }
 
+#if PY_MAJOR_VERSION >= 3
 PyMODINIT_FUNC
 PyInit_lcs(void)
 {
     return moduleinit();
 }
+#else
+PyMODINIT_FUNC
+initlcs(void)
+{
+    moduleinit();
+}
+#endif

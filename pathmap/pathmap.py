@@ -3,11 +3,7 @@
 import os
 
 from lcs import longest_common_substring
-
-from Levenshtein import editops, matching_blocks, opcodes
 from operator import itemgetter
-
-from difflib import SequenceMatcher
 
 relpath = os.path.relpath
 
