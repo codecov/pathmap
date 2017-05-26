@@ -23,7 +23,6 @@ from lcs import longest_common_substring
 
 # ========== Mock data ===========
 before = [
-    'very/long/path.py',
     'before/path.py',
     'not/found.py',
     '/Users/user/owner/repo/dist/components/login.js',
@@ -32,7 +31,6 @@ before = [
 ]
 
 after = [
-    'long/path.py',
     'after/path.py',
     None,
     'src/components/login.js',
@@ -40,7 +38,7 @@ after = [
     'path.py'
 ]
 
-toc = ','.join(map(lambda x: "" if x == None else x, after))
+toc = ','.join(map(lambda x: "" if x == None else x, after)) + ','
 
 # ========= END Mock data ==========
 def test_clean_path():

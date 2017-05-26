@@ -60,14 +60,15 @@ def resolve_path(toc, path, resolvers):
 
     returns new_path (str), pattern (list)
     """
+    _pattern = ',{},'.format
     # direct match
-    if ',{},'.format(path) in toc:
+    if _pattern(path) in toc:
         return path, None
 
     # known changes
     for (remove, add) in resolvers:
         if path.startswith(remove):
-            _path = ',{}{},'.format(add, path.replace(remove, ''))
+            _path = _pattern(add, path.replace(remove, ''))
             if _path in toc:
                 return _path[1:-1], None
 
@@ -134,7 +135,6 @@ def resolve_paths(toc, paths):
     for path in paths:
         (new_path, resolve) = resolve_path(toc, path, resolvers)
         if new_path:
-            toc = toc.replace(new_path, '')
             # yield the match
             yield new_path
             # add known resolve
