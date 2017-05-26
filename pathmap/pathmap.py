@@ -2,6 +2,8 @@
 
 import os
 
+import sys
+
 from lcs import longest_common_substring
 from operator import itemgetter
 
@@ -74,10 +76,6 @@ def resolve_path(toc, path, resolvers):
     if new_path:
         return new_path, pattern
 
-    (new_path, pattern) = resolve_path_if_short(toc, path)
-    if new_path:
-        return new_path, pattern
-
     # not found
     return None, None
 
@@ -95,11 +93,24 @@ def resolve_path_if_long(toc, path):
 
     # Find the longest common substring 
     loc = longest_common_substring(path, toc)
+
     if loc:
         # Find the index that matches the loc
-        index = toc.find(loc)
+        index = toc.lower().find(loc.lower())
         # Extract string from location
         match = extract_match(toc, index)
+
+        # We expect the longest common substring
+        # to have a match in the end of the string
+        if not match.lower().endswith(loc.lower()):
+            return None, None
+
+        # If we have a match in the end we make sure
+        # that this is a full match of the filename and
+        # not partial match
+        if loc.lower().split('/')[-1] != match.lower().split('/')[-1]:
+            return None, None
+
         # Remove pattern
         rm_pattern  = path.replace(loc, '')
         if rm_pattern:
@@ -109,21 +120,6 @@ def resolve_path_if_long(toc, path):
         if add_pattern:
             add_pattern = slash_pattern(add_pattern)
         return match, (rm_pattern, add_pattern)
-    else:
-        return None, None
-
-def resolve_path_if_short(toc, path):
-    """
-    Resolve short path e.g.: short/path.py => /very/long/path.py
-
-    :toc (str) Table of contents
-    :path (str) Path to resolve
-    """
-    index = toc.find(path)
-    if index != -1:
-        match = extract_match(toc,index)
-        add_pattern = match.replace(path, '')
-        return match, ('', add_pattern)
     else:
         return None, None
 
@@ -138,7 +134,6 @@ def resolve_paths(toc, paths):
     for path in paths:
         (new_path, resolve) = resolve_path(toc, path, resolvers)
         if new_path:
-            # Remove the path from toc
             toc = toc.replace(new_path, '')
             # yield the match
             yield new_path

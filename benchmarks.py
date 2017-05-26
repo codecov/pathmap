@@ -2,9 +2,10 @@ import random
 import time
 
 from pathmap import (
-    longest_common_substring,
     resolve_paths
 )
+
+from lcs import longest_common_substring
 
  
 class Timer():

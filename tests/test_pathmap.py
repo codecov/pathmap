@@ -16,7 +16,6 @@ from pathmap import (
     extract_match,
     resolve_path, 
     resolve_path_if_long, 
-    resolve_path_if_short, 
     resolve_paths
 )
 
@@ -83,4 +82,6 @@ def test_resolve_path():
 
 def test_resolve_paths():
     resolved_paths = resolve_paths(toc, before)
-    assert set([r for r in resolved_paths]) == set(after)
+    first = set([r for r in resolved_paths])
+    second = set(after)
+    assert first == second

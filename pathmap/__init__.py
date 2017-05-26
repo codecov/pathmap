@@ -5,7 +5,6 @@ from .pathmap import (
     extract_match,
     resolve_path, 
     resolve_path_if_long, 
-    resolve_path_if_short, 
     resolve_paths
 )
 

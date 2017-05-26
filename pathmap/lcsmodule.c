@@ -23,7 +23,7 @@ int *_lcs(char *s, char *t) {
     for (i = 0; i < strlen1; i++) {
         memcpy(ptr[0], ptr[1], strlen2 * sizeof(int));
         for (j = 0; j < strlen2; j++) {
-            if (s[i] == t[j]) {
+            if (tolower(s[i]) == tolower(t[j])) {
                 if (i == 0 || j == 0) {
                     ptr[1][j] = 1;
                 } else {
