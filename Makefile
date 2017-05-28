@@ -36,7 +36,7 @@ testpy:
 	py.test
 
 testc:
-	$(C_COMPILER) $(SRCT) $(SRCS) $(SRCU) $(CFLAGS) $(LDFLAGS) -o ctests.$(TARGET_EXTENSION) -v
+	$(C_COMPILER) $(SRCT) $(SRCS) $(SRCU) $(CFLAGS) $(LDFLAGS) -o ctests.$(TARGET_EXTENSION) && ./ctests.$(TARGET_EXTENSION)
 
 clean:
 	$(CLEANUP) *.$(TARGET_EXTENSION)
