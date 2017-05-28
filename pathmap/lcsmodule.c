@@ -1,6 +1,5 @@
 #include <Python.h>
 
-
 int *_lcs(char *s, char *t) {
     int strlen1 = strlen(s);
     int strlen2 = strlen(t);

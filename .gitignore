@@ -66,3 +66,6 @@ venv
 
 # Unity C test framework
 Unity
+
+*.out
+*.out.*
