@@ -30,7 +30,10 @@ def _slash_pattern(pattern):
 
     returns a pattern with slash
     """
-    return pattern if pattern.endswith('/') else '%s/' % pattern
+    if pattern.endswith('/'):
+        return pattern
+    else:
+        return '%s/' % pattern
 
 
 def _extract_match(toc, index):
@@ -64,15 +67,16 @@ def _resolve_path(toc, path, resolvers):
 
     returns new_path (str), pattern (list)
     """
-    _pattern = ',{},'.format
+    _pattern = ',{}{},'.format
     # direct match
-    if _pattern(path) in toc:
+    if _pattern(path, '') in toc:
         return path, None
 
     # known changes
+    _path_startswith = path.startswith
     for (remove, add) in resolvers:
-        if path.startswith(remove):
-            _path = _pattern(add, path.replace(remove, ''))
+        if _path_startswith(remove):
+            _path = _pattern(add, path[len(remove):])
             if _path in toc:
                 return _path[1:-1], None
 

@@ -26,6 +26,7 @@ from lcs import longest_common_substring
 # ========== Mock data ===========
 before = [
     'before/path.py',
+    'before/path.py',
     'not/found.py',
     '/Users/user/owner/repo/dist/components/login.js',
     'site-packages/package/__init__.py',
@@ -33,6 +34,7 @@ before = [
 ]
 
 after = [
+    'after/path.py',
     'after/path.py',
     None,
     'src/components/login.js',
@@ -77,6 +79,13 @@ def test_resolve_path_if_long():
     (new_path, pattern) = _resolve_path_if_long(toc, path)
     assert new_path == 'src/components/login.js'
     assert pattern == ('/Users/user/owner/repo/dist/', 'src/')
+
+
+def test_resolve_path_if_long_empty():
+    (new_path, pattern) = _resolve_path_if_long('', '')
+    assert (new_path, pattern) == (None, None)
+    (new_path, pattern) = _resolve_path_if_long('abc/xyz', 'abc')
+    assert (new_path, pattern) == (None, None)
 
 
 def test_resolve_path():
