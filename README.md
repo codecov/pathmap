@@ -13,7 +13,7 @@ Pathmap
 
 To run python tests
 
-	make test
+	make testpy
 
 To run C tests you will need to clone the Unity C test framework to the repository root.
 It is ignored by default.
