@@ -33,7 +33,7 @@ install:
 	python setup.py install build_ext -i
 
 testpy:
-	py.test
+	py.test tests --cov=pathmap --cov-report=term-missing
 
 testc:
 	$(C_COMPILER) $(SRCT) $(SRCS) $(SRCU) $(CFLAGS) $(LDFLAGS) -o ctests.$(TARGET_EXTENSION) && ./ctests.$(TARGET_EXTENSION)
