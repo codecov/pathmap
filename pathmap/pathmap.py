@@ -67,6 +67,8 @@ def _resolve_path(toc, path, resolvers):
 
     returns new_path (str), pattern (list)
     """
+    path = clean_path(path)
+
     _pattern = ',{}{},'.format
     # direct match
     if _pattern(path, '') in toc:

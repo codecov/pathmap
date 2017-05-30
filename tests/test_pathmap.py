@@ -30,7 +30,8 @@ before = [
     'not/found.py',
     '/Users/user/owner/repo/dist/components/login.js',
     'site-packages/package/__init__.py',
-    'path.py'
+    'path.py',
+    'a/b/../Path With\\ Space'
 ]
 
 after = [
@@ -39,7 +40,8 @@ after = [
     None,
     'src/components/login.js',
     'package/__init__.py',
-    'path.py'
+    'path.py',
+    'a/Path With Space'
 ]
 
 toc = ','.join(map(lambda x: "" if x is None else x, after)) + ','
