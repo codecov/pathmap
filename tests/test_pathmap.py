@@ -12,11 +12,11 @@ import pytest
 
 from pathmap import (
     clean_path,
-    slash_pattern,
-    extract_match,
-    resolve_path,
-    resolve_path_if_long,
-    resolve_paths
+    _slash_pattern,
+    _extract_match,
+    _resolve_path,
+    _resolve_path_if_long,
+    resolve_paths,
 )
 
 from lcs import longest_common_substring
@@ -56,12 +56,12 @@ def test_clean_path():
 
 def test_slash_pattern():
     has_slash = 'slash/'
-    assert slash_pattern(has_slash) == 'slash/'
+    assert _slash_pattern(has_slash) == 'slash/'
 
 
 def test_extract_match():
     index = toc.find('components')
-    extracted = extract_match(toc, index)
+    extracted = _extract_match(toc, index)
     assert extracted == 'src/components/login.js'
 
 
@@ -73,7 +73,7 @@ def test_longest_common_substring():
 
 def test_resolve_path_if_long():
     path = '/Users/user/owner/repo/dist/components/login.js'
-    (new_path, pattern) = resolve_path_if_long(toc, path)
+    (new_path, pattern) = _resolve_path_if_long(toc, path)
     assert new_path == 'src/components/login.js'
     assert pattern == ('/Users/user/owner/repo/dist/', 'src/')
 
@@ -81,7 +81,7 @@ def test_resolve_path_if_long():
 def test_resolve_path():
     # short to long
     path = 'components/login.js'
-    (new_path, pattern) = resolve_path(toc, path, [])
+    (new_path, pattern) = _resolve_path(toc, path, [])
     assert new_path == 'src/components/login.js'
     assert pattern == ('', 'src/')
 

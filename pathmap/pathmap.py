@@ -21,7 +21,8 @@ def clean_path(path):
     )
     return path
 
-def slash_pattern(pattern):
+
+def _slash_pattern(pattern):
     """
     Checks if pattern ends with a slash and appends one if slash is not present
 
@@ -31,7 +32,8 @@ def slash_pattern(pattern):
     """
     return pattern if pattern.endswith('/') else '%s/' % pattern
 
-def extract_match(toc, index):
+
+def _extract_match(toc, index):
     """
     Extracts a path between seperators (,)
 
@@ -52,7 +54,7 @@ def extract_match(toc, index):
     return toc[start_index+1:end_index]
 
 
-def resolve_path(toc, path, resolvers):
+def _resolve_path(toc, path, resolvers):
     """
     Resolve a path
 
@@ -75,7 +77,7 @@ def resolve_path(toc, path, resolvers):
                 return _path[1:-1], None
 
     # path may be to long
-    (new_path, pattern) = resolve_path_if_long(toc, path)
+    (new_path, pattern) = _resolve_path_if_long(toc, path)
     if new_path:
         return new_path, pattern
 
@@ -83,7 +85,7 @@ def resolve_path(toc, path, resolvers):
     return None, None
 
 
-def resolve_path_if_long(toc, path):
+def _resolve_path_if_long(toc, path):
     """
     Resolves a long path, e.g.: very/long/path.py => long/path.py
 
@@ -101,7 +103,7 @@ def resolve_path_if_long(toc, path):
         # Find the index that matches the loc
         index = toc.lower().find(loc.lower())
         # Extract string from location
-        match = extract_match(toc, index)
+        match = _extract_match(toc, index)
 
         # We expect the longest common substring
         # to have a match in the end of the string
@@ -117,11 +119,11 @@ def resolve_path_if_long(toc, path):
         # Remove pattern
         rm_pattern = path.replace(loc, '')
         if rm_pattern:
-            rm_pattern = slash_pattern(rm_pattern)
+            rm_pattern = _slash_pattern(rm_pattern)
         # Add pattern
         add_pattern = match.replace(loc, '')
         if add_pattern:
-            add_pattern = slash_pattern(add_pattern)
+            add_pattern = _slash_pattern(add_pattern)
         return match, (rm_pattern, add_pattern)
     else:
         return None, None
@@ -136,7 +138,7 @@ def resolve_paths(toc, paths):
     # keep a cache of known changes
     resolvers = []
     for path in paths:
-        (new_path, resolve) = resolve_path(toc, path, resolvers)
+        (new_path, resolve) = _resolve_path(toc, path, resolvers)
         if new_path:
             # yield the match
             yield new_path
