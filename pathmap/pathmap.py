@@ -7,12 +7,14 @@ import sys
 from lcs import longest_common_substring
 from operator import itemgetter
 
+
 relpath = os.path.relpath
+
 
 def clean_path(path):
     path = relpath(
         path.strip()
-            .replace('**/','')
+            .replace('**/', '')
             .replace('\r', '')
             .replace('\\ ', ' ')
             .replace('\\', '/')
@@ -34,7 +36,7 @@ def extract_match(toc, index):
     Extracts a path between seperators (,)
 
     :toc (str) Table of contents
-    :index (int) Index of match 
+    :index (int) Index of match
 
     returns full path from match
     """
@@ -92,7 +94,7 @@ def resolve_path_if_long(toc, path):
     """
     # maybe regexp style resolving and take the longest discovered pathname
 
-    # Find the longest common substring 
+    # Find the longest common substring
     loc = longest_common_substring(path, toc)
 
     if loc:
@@ -113,7 +115,7 @@ def resolve_path_if_long(toc, path):
             return None, None
 
         # Remove pattern
-        rm_pattern  = path.replace(loc, '')
+        rm_pattern = path.replace(loc, '')
         if rm_pattern:
             rm_pattern = slash_pattern(rm_pattern)
         # Add pattern
@@ -123,6 +125,7 @@ def resolve_path_if_long(toc, path):
         return match, (rm_pattern, add_pattern)
     else:
         return None, None
+
 
 def resolve_paths(toc, paths):
     """

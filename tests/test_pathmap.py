@@ -11,15 +11,16 @@ Tests for `pathmap` module.
 import pytest
 
 from pathmap import (
-    clean_path, 
+    clean_path,
     slash_pattern,
     extract_match,
-    resolve_path, 
-    resolve_path_if_long, 
+    resolve_path,
+    resolve_path_if_long,
     resolve_paths
 )
 
 from lcs import longest_common_substring
+
 
 # ========== Mock data ===========
 before = [
@@ -38,7 +39,8 @@ after = [
     'path.py'
 ]
 
-toc = ','.join(map(lambda x: "" if x == None else x, after)) + ','
+toc = ','.join(map(lambda x: "" if x is None else x, after)) + ','
+
 
 # ========= END Mock data ==========
 def test_clean_path():
@@ -51,32 +53,38 @@ def test_clean_path():
     path = 'ms\\style\\directory'
     assert clean_path(path) == 'ms/style/directory'
 
+
 def test_slash_pattern():
     has_slash = 'slash/'
     assert slash_pattern(has_slash) == 'slash/'
+
 
 def test_extract_match():
     index = toc.find('components')
     extracted = extract_match(toc, index)
     assert extracted == 'src/components/login.js'
 
+
 def test_longest_common_substring():
     paths = ','.join(before)
     result = longest_common_substring('some/folder/../repo/dist/components/login.js', paths)
     assert result == '/repo/dist/components/login.js'
 
+
 def test_resolve_path_if_long():
     path = '/Users/user/owner/repo/dist/components/login.js'
     (new_path, pattern) = resolve_path_if_long(toc, path)
     assert new_path == 'src/components/login.js'
-    assert pattern == ('/Users/user/owner/repo/dist/','src/')
+    assert pattern == ('/Users/user/owner/repo/dist/', 'src/')
+
 
 def test_resolve_path():
     # short to long
     path = 'components/login.js'
     (new_path, pattern) = resolve_path(toc, path, [])
     assert new_path == 'src/components/login.js'
-    assert pattern  == ('', 'src/')
+    assert pattern == ('', 'src/')
+
 
 def test_resolve_paths():
     resolved_paths = resolve_paths(toc, before)
