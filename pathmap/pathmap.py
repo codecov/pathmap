@@ -147,3 +147,22 @@ def resolve_paths(toc, paths):
                 resolvers.append(resolve)
         else:
             yield None
+
+
+def resolve_by_method(toc):
+    """
+    returns a method that can be called with a path to resolve
+    """
+    # keep a cache of known changes
+    resolvers = []
+
+    def _resolve(path):
+        (new_path, resolve) = _resolve_path(toc, path, resolvers)
+        if new_path:
+            # add known resolve
+            if resolve:
+                resolvers.append(resolve)
+            # yield the match
+            return new_path
+
+    return _resolve

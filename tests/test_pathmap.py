@@ -17,6 +17,7 @@ from pathmap import (
     _resolve_path,
     _resolve_path_if_long,
     resolve_paths,
+    resolve_by_method
 )
 
 from lcs import longest_common_substring
@@ -89,5 +90,13 @@ def test_resolve_path():
 def test_resolve_paths():
     resolved_paths = resolve_paths(toc, before)
     first = set([r for r in resolved_paths])
+    second = set(after)
+    assert first == second
+
+
+def test_resolve_by_method():
+    resolver = resolve_by_method(toc)
+    assert callable(resolver)
+    first = set(map(resolver, before))
     second = set(after)
     assert first == second
