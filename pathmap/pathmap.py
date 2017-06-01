@@ -57,7 +57,7 @@ def _extract_match(toc, index):
     return toc[start_index+1:end_index]
 
 
-def _resolve_path(toc, path, resolvers):
+def _resolve_path(toc, path, resolvers, ancestors=None):
     """
     Resolve a path
 
@@ -83,7 +83,7 @@ def _resolve_path(toc, path, resolvers):
                 return _path[1:-1], None
 
     # path may be to long
-    (new_path, pattern) = _resolve_path_if_long(toc, path)
+    (new_path, pattern) = _resolve_path_if_long(toc, path, ancestors)
     if new_path:
         return new_path, pattern
 
@@ -91,7 +91,7 @@ def _resolve_path(toc, path, resolvers):
     return None, None
 
 
-def _resolve_path_if_long(toc, path):
+def _resolve_path_if_long(toc, path, ancestors=None):
     """
     Resolves a long path, e.g.: very/long/path.py => long/path.py
 
@@ -119,7 +119,7 @@ def _resolve_path_if_long(toc, path):
         # If we have a match in the end we make sure
         # that this is a full match of the filename and
         # not partial match
-        if loc.lower().split('/')[-1] != match.lower().split('/')[-1]:
+        if path.lower().split('/')[-1] != match.lower().split('/')[-1]:
             return None, None
 
         # Remove pattern
@@ -135,7 +135,7 @@ def _resolve_path_if_long(toc, path):
         return None, None
 
 
-def resolve_paths(toc, paths):
+def resolve_paths(toc, paths, ancestors=None):
     """
     :toc (str) e.g, ",real_path,another_real_path,"
     :paths (list) e.g. ["path", "another_path"]
@@ -144,7 +144,7 @@ def resolve_paths(toc, paths):
     # keep a cache of known changes
     resolvers = []
     for path in paths:
-        (new_path, resolve) = _resolve_path(toc, path, resolvers)
+        (new_path, resolve) = _resolve_path(toc, path, resolvers, ancestors)
         if new_path:
             # yield the match
             yield new_path

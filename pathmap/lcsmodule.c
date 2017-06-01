@@ -1,19 +1,26 @@
 #include <Python.h>
 
-int *_lcs(char *s, char *t) {
-    int strlen1 = strlen(s);
-    int strlen2 = strlen(t);
+
+/**
+ * Calculates the longest common substring
+ * between two strings
+ *
+ * @param needle - The string to search for in hay
+ * @param hay    - The string being searched
+ *
+ * @return An array of [0: length, 1: end_pos] 
+ *		   where 
+ *			length = length of the longest common substring
+ *			end_pos = the end index of the longest common substring in needle
+ * */
+int *_lcs(char *needle, char *hay) {
+    int strlen1 = strlen(needle);
+    int strlen2 = strlen(hay);
     int len = (strlen1 < strlen2) ? strlen2 : strlen1;
     int i, j, k;
     int longest = 0;
     int **ptr = (int **)malloc(2 * sizeof(int *));
     static int *ret;
-    /*
-     * Maximum length of the return list (considering intermediate steps).
-     * It is the maximum length of the source strings + 1 (worst-case
-     * intermediate length) + the value of the longest match + the
-     * terminator value (-1).
-     */
     ret = (int *)malloc((len + 3) * sizeof(int));
     for (i = 0; i < 2; i++)
         ptr[i] = (int *)calloc(strlen2, sizeof(int));
@@ -22,7 +29,7 @@ int *_lcs(char *s, char *t) {
     for (i = 0; i < strlen1; i++) {
         memcpy(ptr[0], ptr[1], strlen2 * sizeof(int));
         for (j = 0; j < strlen2; j++) {
-            if (tolower(s[i]) == tolower(t[j])) {
+            if (tolower(needle[i]) == tolower(hay[j])) {
                 if (i == 0 || j == 0) {
                     ptr[1][j] = 1;
                 } else {
