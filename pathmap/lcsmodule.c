@@ -81,9 +81,7 @@ lcs(PyObject* self, PyObject* args)
     substr = (char *)malloc(longest+1 * sizeof(char));
     memset(substr, '\0', longest+1);
 
-    while (results[++i] != -1) {
-        strncpy(substr, &s1[results[i] - longest + 1], longest);
-    }
+    strncpy(substr, &s1[results[1] - longest + 1], longest);
 
     PyObject *ret = Py_BuildValue("s", substr, longest+1);
 

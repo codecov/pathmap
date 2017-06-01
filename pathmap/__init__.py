@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from .pathmap import (
     clean_path,
+    _check_ancestors,
     _slash_pattern,
     _extract_match,
     _resolve_path,
