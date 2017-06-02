@@ -21,6 +21,18 @@ def clean_path(path):
     )
     return path
 
+def _check_ancestors(path, match, ancestors):
+    anc = ancestors + 1
+    split_path = path.lower().split('/')
+    split_match = match.lower().split('/')
+
+    if len(split_path) < anc or len(split_match) < anc:
+        return False
+
+    path_ancestors  = split_path[len(split_path) - anc:]
+    match_ancestors = split_match[len(split_match) - anc:]
+
+    return path_ancestors == match_ancestors
 
 def _slash_pattern(pattern):
     """
@@ -51,8 +63,6 @@ def _extract_match(toc, index):
         start_index -= 1
     end_index = index
     while toc[end_index] != ',' and end_index < length - 1:
-        end_index += 1
-    if end_index == length - 1:
         end_index += 1
     return toc[start_index+1:end_index]
 
@@ -113,7 +123,13 @@ def _resolve_path_if_long(toc, path, ancestors=None):
         # Find the index that matches the loc
         index = toc.lower().find(loc.lower())
         # Extract string from location
-        match = _extract_match(toc, index)
+        # and remove extra ',' characters if present
+        match = _extract_match(toc, index).replace(',','')
+
+        # If ancestors are declared check if they are valid
+        if ancestors:
+            if not _check_ancestors(path, match, ancestors):
+                return None, None
 
         # We expect the longest common substring
         # to have a match in the end of the string
@@ -166,8 +182,8 @@ def resolve_by_method(toc):
     # keep a cache of known changes
     resolvers = []
 
-    def _resolve(path):
-        (new_path, resolve) = _resolve_path(toc, path, resolvers)
+    def _resolve(path, ancestors=None):
+        (new_path, resolve) = _resolve_path(toc, path, resolvers, ancestors)
         if new_path:
             # add known resolve
             if resolve:
