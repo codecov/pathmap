@@ -160,7 +160,7 @@ def test_case_sensitive_ancestors():
 def test_path_should_not_resolve():
     resolvers = []
     toc = ',four/six/three.py,'
-    path = ',four/six/seven.py,'
+    path = 'four/six/seven.py'
     (path, pattern) = _resolve_path(toc, path, resolvers)
 
     assert path is None
