@@ -87,7 +87,7 @@ def _resolve_path(toc, path, resolvers, ancestors=None):
         return path, None
 
     # will not resolve - no possible matches
-    if ('%s,' % '/'.join(path.rsplit('/', (ancestors or 0) + 1)[1:])) not in toc:
+    if ('%s,' % '/'.join(path.rsplit('/', (ancestors or 0) + 1)[1:])).lower() not in toc.lower():
         return None, None
 
     # known changes
