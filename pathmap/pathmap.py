@@ -84,6 +84,10 @@ def _resolve_path(toc, path, resolvers, ancestors=None):
     if _pattern(path, '') in toc:
         return path, None
 
+    # will not resolve - no possible matches
+    if ('%s,' % '/'.join(path.rsplit('/', (ancestors or 0) + 1)[1:])) not in toc:
+        return None, None
+
     # known changes
     _path_startswith = path.startswith
     for (remove, add) in resolvers:
