@@ -119,7 +119,6 @@ def test_check_ancestors():
     ancestors = 1
     path = 'one/two/three'
     match = 'four/two/three'
-
     assert _check_ancestors(path, match, ancestors) is True
     match = 'four/five/three'
     assert _check_ancestors(path, match, ancestors) is False
@@ -132,20 +131,18 @@ def test_resolve_paths_with_ancestors():
     paths = ['z', 'R/z', 'R/y/z', 'x/y/z', 'w/x/y/z']
     expected = ['x/y/z', 'x/y/z', 'x/y/z', 'x/y/z', 'x/y/z']
     resolved = list(resolve_paths(toc, paths))
-
     assert set(resolved) == set(expected)
+
     # one ancestors ====================================
     paths = ['z', 'R/z', 'R/y/z', 'x/y/z', 'w/x/y/z']
     expected = [None, None, 'x/y/z', 'x/y/z', 'x/y/z']
     resolved = list(resolve_paths(toc, paths, 1))
-
     assert set(resolved) == set(expected)
 
     # two ancestors ====================================
     paths = ['z', 'R/z', 'R/y/z', 'x/y/z', 'w/x/y/z']
     expected = [None, None, None,  'x/y/z', 'x/y/z']
     resolved = list(resolve_paths(toc, paths, 2))
-
     assert set(resolved) == set(expected)
 
 
@@ -153,7 +150,6 @@ def test_case_sensitive_ancestors():
     toc = ',src/HeapDump/GCHeapDump.cs,'
     path = 'C:/projects/perfview/src/heapDump/GCHeapDump.cs'
     (path, pattern) = _resolve_path_if_long(toc, path, 1)
-
     assert path == 'src/HeapDump/GCHeapDump.cs'
 
 
@@ -162,6 +158,5 @@ def test_path_should_not_resolve():
     toc = ',four/six/three.py,'
     path = 'four/six/seven.py'
     (path, pattern) = _resolve_path(toc, path, resolvers)
-
     assert path is None
     assert pattern is None
