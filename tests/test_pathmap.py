@@ -66,6 +66,7 @@ def test_slash_pattern():
 
 
 def test_extract_match():
+    toc = ',src/components/login.js,'
     index = toc.find('components')
     extracted = _extract_match(toc, index)
     assert extracted == 'src/components/login.js'
@@ -145,3 +146,12 @@ def test_resolve_paths_with_ancestors():
     resolved = list(resolve_paths(toc, paths, 2))
     
     assert set(resolved) == set(expected)
+
+def test_case_sensitive_ancestors():
+    toc = ',src/HeapDump/GCHeapDump.cs,'
+    path = 'C:/projects/perfview/src/heapDump/GCHeapDump.cs'
+    (path, pattern) = _resolve_path_if_long(toc, path, 1)
+
+    assert path == 'src/HeapDump/GCHeapDump.cs'
+
+

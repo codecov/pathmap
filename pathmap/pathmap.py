@@ -23,8 +23,8 @@ def clean_path(path):
 
 def _check_ancestors(path, match, ancestors):
     anc = ancestors + 1
-    split_path = path.split('/')
-    split_match = match.split('/')
+    split_path = path.lower().split('/')
+    split_match = match.lower().split('/')
 
     if len(split_path) < anc or len(split_match) < anc:
         return False
@@ -63,8 +63,6 @@ def _extract_match(toc, index):
         start_index -= 1
     end_index = index
     while toc[end_index] != ',' and end_index < length - 1:
-        end_index += 1
-    if end_index == length - 1:
         end_index += 1
     return toc[start_index+1:end_index]
 
