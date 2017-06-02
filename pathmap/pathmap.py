@@ -21,6 +21,7 @@ def clean_path(path):
     )
     return path
 
+
 def _check_ancestors(path, match, ancestors):
     anc = ancestors + 1
     split_path = path.lower().split('/')
@@ -29,10 +30,11 @@ def _check_ancestors(path, match, ancestors):
     if len(split_path) < anc or len(split_match) < anc:
         return False
 
-    path_ancestors  = split_path[len(split_path) - anc:]
+    path_ancestors = split_path[len(split_path) - anc:]
     match_ancestors = split_match[len(split_match) - anc:]
 
     return path_ancestors == match_ancestors
+
 
 def _slash_pattern(pattern):
     """
@@ -124,7 +126,7 @@ def _resolve_path_if_long(toc, path, ancestors=None):
         index = toc.lower().find(loc.lower())
         # Extract string from location
         # and remove extra ',' characters if present
-        match = _extract_match(toc, index).replace(',','')
+        match = _extract_match(toc, index).replace(',', '')
 
         # If ancestors are declared check if they are valid
         if ancestors:

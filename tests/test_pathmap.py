@@ -120,32 +120,34 @@ def test_check_ancestors():
     path = 'one/two/three'
     match = 'four/two/three'
 
-    assert _check_ancestors(path, match, ancestors) == True
+    assert _check_ancestors(path, match, ancestors) is True
     match = 'four/five/three'
-    assert _check_ancestors(path, match, ancestors) == False
+    assert _check_ancestors(path, match, ancestors) is False
+
 
 def test_resolve_paths_with_ancestors():
-    toc      = ',x/y/z,'
-    
+    toc = ',x/y/z,'
+
     # default, no ancestors ============================
-    paths    = ['z','R/z', 'R/y/z', 'x/y/z', 'w/x/y/z']
-    expected = ['x/y/z','x/y/z','x/y/z','x/y/z','x/y/z']
+    paths = ['z', 'R/z', 'R/y/z', 'x/y/z', 'w/x/y/z']
+    expected = ['x/y/z', 'x/y/z', 'x/y/z', 'x/y/z', 'x/y/z']
     resolved = list(resolve_paths(toc, paths))
 
     assert set(resolved) == set(expected)
     # one ancestors ====================================
-    paths    = ['z', 'R/z', 'R/y/z', 'x/y/z', 'w/x/y/z']
-    expected = [None, None,'x/y/z','x/y/z','x/y/z']
+    paths = ['z', 'R/z', 'R/y/z', 'x/y/z', 'w/x/y/z']
+    expected = [None, None, 'x/y/z', 'x/y/z', 'x/y/z']
     resolved = list(resolve_paths(toc, paths, 1))
 
     assert set(resolved) == set(expected)
-    
-     # two ancestors ====================================
-    paths    = ['z', 'R/z', 'R/y/z', 'x/y/z', 'w/x/y/z']
-    expected = [None, None, None,    'x/y/z',   'x/y/z']
+
+    # two ancestors ====================================
+    paths = ['z', 'R/z', 'R/y/z', 'x/y/z', 'w/x/y/z']
+    expected = [None, None, None,  'x/y/z', 'x/y/z']
     resolved = list(resolve_paths(toc, paths, 2))
-    
+
     assert set(resolved) == set(expected)
+
 
 def test_case_sensitive_ancestors():
     toc = ',src/HeapDump/GCHeapDump.cs,'
@@ -161,5 +163,5 @@ def test_path_should_not_resolve():
     path = ',four/six/seven.py,'
     (path, pattern) = _resolve_path(toc, path, resolvers)
 
-    assert path == None
-    assert pattern == None
+    assert path is None
+    assert pattern is None
