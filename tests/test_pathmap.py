@@ -160,3 +160,11 @@ def test_path_should_not_resolve():
     (path, pattern) = _resolve_path(toc, path, resolvers)
     assert path is None
     assert pattern is None
+
+def test_path_should_not_resolve_case_insensative():
+    resolvers = []
+    toc = ',a/b/C,'
+    path = 'System/a/B/c'
+    (path, pattern) = _resolve_path(toc, path, resolvers)
+    assert path == 'a/b/C'
+    assert pattern == ('System/a/B/', 'a/b/')

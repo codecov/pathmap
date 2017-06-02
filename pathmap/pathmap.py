@@ -145,11 +145,18 @@ def _resolve_path_if_long(toc, path, ancestors=None):
             return None, None
 
         # Remove pattern
-        rm_pattern = path.replace(loc, '')
+        m_index = match.lower().find(loc.lower())
+        match_longest = match[m_index:] 
+
+        if match_longest != loc and match_longest.lower() == loc.lower():
+            rm_pattern = '/'.join(path.split('/')[:-1])
+            add_pattern = '/'.join(match.split('/')[:-1])
+        else:
+            rm_pattern = path.replace(loc, '')
+            add_pattern = match.replace(loc, '')
         if rm_pattern:
             rm_pattern = _slash_pattern(rm_pattern)
         # Add pattern
-        add_pattern = match.replace(loc, '')
         if add_pattern:
             add_pattern = _slash_pattern(add_pattern)
         return match, (rm_pattern, add_pattern)
