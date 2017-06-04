@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import os
-
 import sys
 
-from lcs import longest_common_substring
-from operator import itemgetter
-
+from .tree import Tree
 
 relpath = os.path.relpath
 
@@ -49,31 +46,11 @@ def _slash_pattern(pattern):
     else:
         return '%s/' % pattern
 
-
-def _extract_match(toc, index):
-    """
-    Extracts a path between seperators (,)
-
-    :toc (str) Table of contents
-    :index (int) Index of match
-
-    returns full path from match
-    """
-    length = len(toc)
-    start_index = index
-    while toc[start_index] != ',' and start_index >= 0:
-        start_index -= 1
-    end_index = index
-    while toc[end_index] != ',' and end_index < length - 1:
-        end_index += 1
-    return toc[start_index+1:end_index]
-
-
-def _resolve_path(toc, path, resolvers, ancestors=None):
+def _resolve_path(tree, path, resolvers, ancestors=None):
     """
     Resolve a path
 
-    :toc (str) Table of contents
+    :tree (Tree instance) Tree containing a lookup dictionary for paths
     :path (str) The path to be resolved
     :resolvers (list) Resolved changes
 
@@ -83,11 +60,11 @@ def _resolve_path(toc, path, resolvers, ancestors=None):
 
     _pattern = ',{}{},'.format
     # direct match
-    if _pattern(path, '') in toc:
+    if _pattern(path, '') in tree.paths:
         return path, None
 
     # will not resolve - no possible matches
-    if ('%s,' % '/'.join(path.rsplit('/', (ancestors or 0) + 1)[1:])).lower() not in toc.lower():
+    if ('%s,' % '/'.join(path.rsplit('/', (ancestors or 0) + 1)[1:])).lower() not in tree.paths.lower():
         return None, None
 
     # known changes
@@ -95,11 +72,11 @@ def _resolve_path(toc, path, resolvers, ancestors=None):
     for (remove, add) in resolvers:
         if _path_startswith(remove):
             _path = _pattern(add, path[len(remove):])
-            if _path in toc:
+            if _path in tree.paths:
                 return _path[1:-1], None
 
     # path may be to long
-    (new_path, pattern) = _resolve_path_if_long(toc, path, ancestors)
+    (new_path, pattern) = _resolve_path_if_long(tree, path, ancestors)
     if new_path:
         return new_path, pattern
 
@@ -107,11 +84,11 @@ def _resolve_path(toc, path, resolvers, ancestors=None):
     return None, None
 
 
-def _resolve_path_if_long(toc, path, ancestors=None):
+def _resolve_path_if_long(tree, path, ancestors=None):
     """
     Resolves a long path, e.g.: very/long/path.py => long/path.py
 
-    :toc (str) Table of contents
+    :tree (Tree instance) Tree containing a lookup dictionary for paths
     :path (str) Path to resolve
 
     returns new_path (str), pattern (list)
@@ -119,15 +96,9 @@ def _resolve_path_if_long(toc, path, ancestors=None):
     # maybe regexp style resolving and take the longest discovered pathname
 
     # Find the longest common substring
-    loc = longest_common_substring(path, toc)
+    (match, extract) = tree.find_path(path)
 
-    if loc:
-        # Find the index that matches the loc
-        index = toc.lower().find(loc.lower())
-        # Extract string from location
-        # and remove extra ',' characters if present
-        match = _extract_match(toc, index).replace(',', '')
-
+    if match:
         # If ancestors are declared check if they are valid
         if ancestors:
             if not _check_ancestors(path, match, ancestors):
@@ -135,7 +106,7 @@ def _resolve_path_if_long(toc, path, ancestors=None):
 
         # We expect the longest common substring
         # to have a match in the end of the string
-        if not match.lower().endswith(loc.lower()):
+        if not path.lower().endswith(match.lower()):
             return None, None
 
         # If we have a match in the end we make sure
@@ -144,15 +115,23 @@ def _resolve_path_if_long(toc, path, ancestors=None):
         if path.lower().split('/')[-1] != match.lower().split('/')[-1]:
             return None, None
 
-        # Remove pattern
-        rm_pattern = path.replace(loc, '')
+        path_match = path.lower().find(match.lower())
+        path_match_longest = path[path_match:]
+
+        if path_match_longest != match and path_match_longest.lower() == match.lower():
+            rm_pattern = '/'.join(path.split('/')[-1])
+            add_pattern = '/'.join(match.split('/')[-1])
+        else:
+            # Remove pattern
+            rm_pattern  = path[:path_match]
+            add_pattern = extract.replace(match, '')
+
         if rm_pattern:
             rm_pattern = _slash_pattern(rm_pattern)
         # Add pattern
-        add_pattern = match.replace(loc, '')
         if add_pattern:
             add_pattern = _slash_pattern(add_pattern)
-        return match, (rm_pattern, add_pattern)
+        return extract, (rm_pattern, add_pattern)
     else:
         return None, None
 
@@ -163,10 +142,12 @@ def resolve_paths(toc, paths, ancestors=None):
     :paths (list) e.g. ["path", "another_path"]
     returns generated of resolved filepath names
     """
+    tree = Tree()
+    tree.construct_tree(toc)
     # keep a cache of known changes
     resolvers = []
     for path in paths:
-        (new_path, resolve) = _resolve_path(toc, path, resolvers, ancestors)
+        (new_path, resolve) = _resolve_path(tree, path, resolvers, ancestors)
         if new_path:
             # yield the match
             yield new_path
@@ -183,9 +164,11 @@ def resolve_by_method(toc):
     """
     # keep a cache of known changes
     resolvers = []
+    tree = Tree()
+    tree.construct_tree(toc)
 
     def _resolve(path, ancestors=None):
-        (new_path, resolve) = _resolve_path(toc, path, resolvers, ancestors)
+        (new_path, resolve) = _resolve_path(tree, path, resolvers, ancestors)
         if new_path:
             # add known resolve
             if resolve:

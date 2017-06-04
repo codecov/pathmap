@@ -1,9 +1,7 @@
 import random
 import time
 
-from pathmap import (
-    resolve_paths
-)
+from pathmap.tree import Tree
 
 from lcs import longest_common_substring
 
@@ -26,28 +24,24 @@ class Timer():
 # ========== Fixtures ============
 def get_file_fixture():
     files = []
-    with open('tests/test_files/longfix.txt', 'r') as input_data:
+    with open('tests/test_files/toc_benchmark.txt', 'r') as input_data:
         for line in input_data:
-            if line.strip() == '<<<<<< network':
-                break
-            files.append(line.strip())
+            files.extend(line.strip().split(','))
     return files
 
 def main():
     toc = ','.join(get_file_fixture())
-    print('Benchmark function: longest_common_substring')
+    tree = Tree()
+    tree.construct_tree(toc)
+    print('Benchmark Tree::find_longest_common')
     with Timer():
-        longest = longest_common_substring('something/var/.htaccess', toc)
-    mock_paths = [
-        '../google/Auth/Abstract.php',
-        'grid.phtml',
-        'Entity/Attribute/Frontend/CardType.php'
-    ]
-    resolved = []
-    print('Benchmark function: resolve_paths')
-    with Timer():
-        resolved = resolve_paths(toc, mock_paths)
+        longest = tree.find_longest_common('c:/projects/media-server/source/calldetailrecords/esncdr/esncdr.cpp')
+        print(longest)
 
-    print(list([r for r in resolved]))
+    print('Benchmark lcs::longest_common_substring')
+    with Timer():
+        longest = longest_common_substring('c:/projects/media-server/source/calldetailrecords/esncdr/esncdr.cpp', toc)
+        print(longest)
+
 if __name__ == '__main__':
     main()
