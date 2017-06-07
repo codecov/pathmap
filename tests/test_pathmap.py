@@ -18,7 +18,8 @@ from pathmap import (
     _resolve_path_if_long,
     _check_ancestors,
     resolve_paths,
-    resolve_by_method
+    resolve_by_method,
+    Tree
 )
 
 from lcs import longest_common_substring
@@ -80,22 +81,31 @@ def test_longest_common_substring():
 
 def test_resolve_path_if_long():
     path = '/Users/user/owner/repo/dist/components/login.js'
-    (new_path, pattern) = _resolve_path_if_long(toc, path)
+    tree = Tree()
+    tree.construct_tree(toc)
+    (new_path, pattern) = _resolve_path_if_long(tree, path)
     assert new_path == 'src/components/login.js'
     assert pattern == ('/Users/user/owner/repo/dist/', 'src/')
 
 
 def test_resolve_path_if_long_empty():
-    (new_path, pattern) = _resolve_path_if_long('', '')
+    tree = Tree()
+    tree.construct_tree('')
+    (new_path, pattern) = _resolve_path_if_long(tree, '')
     assert (new_path, pattern) == (None, None)
-    (new_path, pattern) = _resolve_path_if_long('abc/xyz', 'abc')
+
+    tree = Tree()
+    tree.construct_tree(',abc/xyz,')
+    (new_path, pattern) = _resolve_path_if_long(tree, 'abc')
     assert (new_path, pattern) == (None, None)
 
 
 def test_resolve_path():
     # short to long
     path = 'components/login.js'
-    (new_path, pattern) = _resolve_path(toc, path, [])
+    tree = Tree()
+    tree.construct_tree(toc)
+    (new_path, pattern) = _resolve_path(tree, path, [])
     assert new_path == 'src/components/login.js'
     assert pattern == ('', 'src/')
 
@@ -148,8 +158,10 @@ def test_resolve_paths_with_ancestors():
 
 def test_case_sensitive_ancestors():
     toc = ',src/HeapDump/GCHeapDump.cs,'
+    tree = Tree()
+    tree.construct_tree(toc)
     path = 'C:/projects/perfview/src/heapDump/GCHeapDump.cs'
-    (path, pattern) = _resolve_path_if_long(toc, path, 1)
+    (path, pattern) = _resolve_path_if_long(tree, path, 1)
     assert path == 'src/HeapDump/GCHeapDump.cs'
 
 
@@ -157,6 +169,8 @@ def test_path_should_not_resolve():
     resolvers = []
     toc = ',four/six/three.py,'
     path = 'four/six/seven.py'
-    (path, pattern) = _resolve_path(toc, path, resolvers)
+    tree = Tree()
+    tree.construct_tree(toc)
+    (path, pattern) = _resolve_path(tree, path, resolvers)
     assert path is None
     assert pattern is None
