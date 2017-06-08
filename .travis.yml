@@ -12,6 +12,3 @@ python:
 install: "python setup.py install build_ext -i && pip install -r requirements_dev.txt"
 
 script: py.test --ignore=virtualenv
-
-after_sucess:
-  - bash <(curl -s https://codecov.io/bash)
