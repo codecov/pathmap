@@ -1,6 +1,6 @@
-wheel==0.29.0
-flake8==3.3.0
-tox==2.3.1
-coverage==4.1
-Sphinx==1.5.6
-pytest==2.9.2
+wheel
+flake8
+tox
+Sphinx
+pytest
+pytest-cov

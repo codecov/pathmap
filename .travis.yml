@@ -6,9 +6,15 @@ python:
   - "3.3"
   - "3.4"
   - "3.5"
-  - "3.5-dev" # 3.5 development branch
+  - "3.5-dev"
   - "3.6"
 
-install: "python setup.py install build_ext -i && pip install -r requirements_dev.txt"
+install:
+  - python setup.py install build_ext -i
+  - pip install -r requirements_dev.txt
 
-script: py.test --ignore=virtualenv
+script:
+  - py.test tests --cov=pathmap
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
