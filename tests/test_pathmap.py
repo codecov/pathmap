@@ -114,6 +114,10 @@ def test_resolve_paths():
     resolved_paths = resolve_paths(toc, before)
     first = set([r for r in resolved_paths])
     second = set(after)
+
+    print(first)
+
+    print(second)
     assert first == second
 
 
@@ -174,3 +178,21 @@ def test_path_should_not_resolve():
     (path, pattern) = _resolve_path(tree, path, resolvers)
     assert path is None
     assert pattern is None
+
+def test_path_should_not_resolve_case_insensative():
+    resolvers = []
+    toc = ',a/b/C,'
+    path = 'a/B/c'
+    tree = Tree()
+    tree.construct_tree(toc)
+    (path, pattern) = _resolve_path(tree, path, resolvers)
+    assert path == 'a/b/C'
+    assert pattern == ('a/B/', 'a/b/')
+
+
+def test_resolve_path_shortest():
+    tree = Tree()
+    tree.construct_tree(',a/b/c.py,b/c.py,')
+    (new_path, pattern) = _resolve_path_if_long(tree, 'r/b/c.py')
+    assert new_path == 'b/c.py'
+    assert pattern == ('r/', '')

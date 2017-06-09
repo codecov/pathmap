@@ -6,6 +6,7 @@ class Tree:
         self.cache = {}
         self.tree  = {}
         self.paths = None
+        self.paths_lis = []
 
     def find_all(self, a_str, sub):
         """
@@ -33,20 +34,33 @@ class Tree:
         between path/lookup results
 
         Returns a tuple of 
-            longest_common_substring
+            longest_common_substring of path
             extracted match from self.paths
         """
 
         if not path:
             return None, None
 
-        filename = path.split('/')[-1].lower()
-        hit      = self.lookup(filename)
-        if not hit:
-            return None, None
-        longest = longest_common_substring(path, hit)
-        match_index = hit.lower().find(longest.lower())
-        return (longest, _extract_match(hit, match_index))
+        if path in self.paths_lis:
+            longest = path
+            match   = path
+        else:
+            filename = path.split('/')[-1].lower()
+            hit      = self.lookup(filename)
+            if not hit:
+                return None, None
+            longest = longest_common_substring(path, hit)
+
+            if longest in self.paths_lis:
+                match = longest 
+            else:
+                match_index = hit.lower().find(longest.lower())
+                match = _extract_match(hit, match_index)
+        print('path is: ')
+        print(path)
+        if path == 'before/path.py':
+            print(longest, match)
+        return (longest, match)
 
     def construct_tree(self, paths):
         """
@@ -57,8 +71,8 @@ class Tree:
         returns A tree instance
         """
         self.paths = paths
-        paths_lis = paths.split(',')
-        for p in paths_lis:
+        self.paths_lis = paths.split(',')
+        for p in self.paths_lis:
             filename = p.split('/')[-1].lower()
 
             # Check if filename has been handled

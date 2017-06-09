@@ -104,23 +104,11 @@ def _resolve_path_if_long(tree, path, ancestors=None):
             if not _check_ancestors(path, match, ancestors):
                 return None, None
 
-        # We expect the longest common substring
-        # to have a match in the end of the string
-        if not path.lower().endswith(match.lower()):
-            return None, None
+        path_match = path.find(match)
 
-        # If we have a match in the end we make sure
-        # that this is a full match of the filename and
-        # not partial match
-        if path.lower().split('/')[-1] != match.lower().split('/')[-1]:
-            return None, None
-
-        path_match = path.lower().find(match.lower())
-        path_match_longest = path[path_match:]
-
-        if path_match_longest != match and path_match_longest.lower() == match.lower():
-            rm_pattern = '/'.join(path.split('/')[-1])
-            add_pattern = '/'.join(match.split('/')[-1])
+        if path != extract and path.lower() == extract.lower():
+            rm_pattern = '/'.join(path.split('/')[:-1])
+            add_pattern = '/'.join(extract.split('/')[:-1])
         else:
             # Remove pattern
             rm_pattern  = path[:path_match]
