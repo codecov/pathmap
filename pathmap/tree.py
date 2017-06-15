@@ -51,16 +51,15 @@ class Tree:
                 return None, None
             longest = longest_common_substring(path, hit)
 
-            if longest in self.paths_lis:
-                match = longest 
+            # Remove slash for a better chance of match
+            longest_cleaned =  longest[1:] if longest.startswith('/') else longest
+
+            if longest_cleaned in self.paths_lis:
+                match = longest_cleaned
             else:
-                match_index = hit.lower().find(longest.lower())
+                match_index = hit.lower().find(longest_cleaned.lower())
                 match = _extract_match(hit, match_index)
-        print('path is: ')
-        print(path)
-        if path == 'before/path.py':
-            print(longest, match)
-        return (longest, match)
+        return (longest_cleaned, match)
 
     def construct_tree(self, paths):
         """
