@@ -8,6 +8,6 @@ python:
   - "3.5-dev" # 3.5 development branch
   - "3.6"
 # command to install dependencies
-install: "python setup.py install build_ext -i && pip install -r requirements_dev.txt"
+install: "python setup.py install && pip install -r requirements_dev.txt"
 # command to run tests
-script: py.test --ignore=virtualenv
+script: make test

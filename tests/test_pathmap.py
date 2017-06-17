@@ -15,30 +15,22 @@ from pathmap import (
     _slash_pattern,
     _extract_match,
     _resolve_path,
-    _resolve_path_if_long,
     _check_ancestors,
     resolve_paths,
     resolve_by_method,
     Tree
 )
 
-from lcs import longest_common_substring
-
-
 # ========== Mock data ===========
 before = [
-    'before/path.py',
-    'before/path.py',
     'not/found.py',
-    '/Users/user/owner/repo/dist/components/login.js',
+    '/Users/user/owner/repo/src/components/login.js',
     'site-packages/package/__init__.py',
     'path.py',
     'a/b/../Path With\\ Space'
 ]
 
 after = [
-    'after/path.py',
-    'after/path.py',
     None,
     'src/components/login.js',
     'package/__init__.py',
@@ -73,51 +65,19 @@ def test_extract_match():
     assert extracted == 'src/components/login.js'
 
 
-def test_longest_common_substring():
-    paths = ','.join(before)
-    result = longest_common_substring('some/folder/../repo/dist/components/login.js', paths)
-    assert result == '/repo/dist/components/login.js'
-
-
-def test_resolve_path_if_long():
-    path = '/Users/user/owner/repo/dist/components/login.js'
-    tree = Tree()
-    tree.construct_tree(toc)
-    (new_path, pattern) = _resolve_path_if_long(tree, path)
-    assert new_path == 'src/components/login.js'
-    assert pattern == ('/Users/user/owner/repo/dist/', 'src/')
-
-
-def test_resolve_path_if_long_empty():
-    tree = Tree()
-    tree.construct_tree('')
-    (new_path, pattern) = _resolve_path_if_long(tree, '')
-    assert (new_path, pattern) == (None, None)
-
-    tree = Tree()
-    tree.construct_tree(',abc/xyz,')
-    (new_path, pattern) = _resolve_path_if_long(tree, 'abc')
-    assert (new_path, pattern) == (None, None)
-
-
 def test_resolve_path():
     # short to long
-    path = 'components/login.js'
+    path = 'Src/components/login.js'
     tree = Tree()
     tree.construct_tree(toc)
-    (new_path, pattern) = _resolve_path(tree, path, [])
+    new_path  = _resolve_path(tree, path)
     assert new_path == 'src/components/login.js'
-    assert pattern == ('', 'src/')
-
 
 def test_resolve_paths():
     resolved_paths = resolve_paths(toc, before)
     first = set([r for r in resolved_paths])
     second = set(after)
 
-    print(first)
-
-    print(second)
     assert first == second
 
 
@@ -140,16 +100,18 @@ def test_check_ancestors():
 
 def test_resolve_paths_with_ancestors():
     toc = ',x/y/z,'
+    tree = Tree()
+    tree.construct_tree(toc)
 
     # default, no ancestors ============================
-    paths = ['z', 'R/z', 'R/y/z', 'x/y/z', 'w/x/y/z']
-    expected = ['x/y/z', 'x/y/z', 'x/y/z', 'x/y/z', 'x/y/z']
+    paths    = ['z', 'R/z', 'R/y/z', 'x/y/z', 'w/x/y/z']
+    expected = [None, None, None, 'x/y/z', 'x/y/z']
     resolved = list(resolve_paths(toc, paths))
-    assert set(resolved) == set(expected)
+    assert resolved  == expected
 
     # one ancestors ====================================
     paths = ['z', 'R/z', 'R/y/z', 'x/y/z', 'w/x/y/z']
-    expected = [None, None, 'x/y/z', 'x/y/z', 'x/y/z']
+    expected = [None, None, None, 'x/y/z', 'x/y/z']
     resolved = list(resolve_paths(toc, paths, 1))
     assert set(resolved) == set(expected)
 
@@ -165,19 +127,17 @@ def test_case_sensitive_ancestors():
     tree = Tree()
     tree.construct_tree(toc)
     path = 'C:/projects/perfview/src/heapDump/GCHeapDump.cs'
-    (path, pattern) = _resolve_path_if_long(tree, path, 1)
-    assert path == 'src/HeapDump/GCHeapDump.cs'
+    new_path = _resolve_path(tree, path, 1)
+    assert new_path == 'src/HeapDump/GCHeapDump.cs'
 
 
 def test_path_should_not_resolve():
-    resolvers = []
     toc = ',four/six/three.py,'
     path = 'four/six/seven.py'
     tree = Tree()
     tree.construct_tree(toc)
-    (path, pattern) = _resolve_path(tree, path, resolvers)
+    path = _resolve_path(tree, path)
     assert path is None
-    assert pattern is None
 
 def test_path_should_not_resolve_case_insensative():
     resolvers = []
@@ -185,14 +145,11 @@ def test_path_should_not_resolve_case_insensative():
     path = 'a/B/c'
     tree = Tree()
     tree.construct_tree(toc)
-    (path, pattern) = _resolve_path(tree, path, resolvers)
+    path  = _resolve_path(tree, path)
     assert path == 'a/b/C'
-    assert pattern == ('a/B/', 'a/b/')
-
 
 def test_resolve_path_shortest():
     tree = Tree()
     tree.construct_tree(',a/b/c.py,b/c.py,')
-    (new_path, pattern) = _resolve_path_if_long(tree, 'r/b/c.py')
+    new_path = _resolve_path(tree, 'r/b/c.py')
     assert new_path == 'b/c.py'
-    assert pattern == ('r/', '')

@@ -1,87 +1,145 @@
 from .utils import _extract_match
-from lcs import longest_common_substring
+import collections
 
 class Tree:
+
     def __init__(self, *args, **kwargs):
-        self.cache = {}
-        self.tree  = {}
-        self.paths = None
-        self.paths_lis = []
+        self.instance = {}
 
-    def find_all(self, a_str, sub):
-        """
-        Find all instances of substring within string
+        # Sequence end indicator
+        self._END = '\\*__ends__*//'
 
-        a_str (str) The string to search in
-        sub (str) The string to look for
+        # Original value indicator
+        self._ORIG = '\\*__orig__*//'
+
+    def _list_to_nested_dict(self, lis):
         """
-        start = 0
-        while True:
-            start = a_str.find(sub, start)
-            if start == -1: return
-            yield start
-            start += len(sub) # use start += 1 to find overlapping matches
+        Turns a list into a nested dict 
+
+        E.g.:
+            ['a','b','c'] => { 'c' : { 'b' : { 'a' : {} } } }
+
+        extra data:
+
+            _end_ - Marks the end of the list
+            E.g.:
+                ['a','b'] => { 'b' : { 'a' : {}, '_end_': True}, '_end_': False}
+
+            _orig_ - The original value of the key/list item
+            E.g.:
+                ['A'] => { 'a' : {}, '_orig_': 'A', '_end_': True}
+        """
+        d = {}
+        for i in range(0, len(lis)):
+            d[self._END] = True if i == 0 else False
+            d[self._ORIG] = lis[i]
+            d = {lis[i].lower(): d}
+        return d
+
+    def _recursive_lookup(self, d, lis, results, i = 0, end=False):
+        """
+        Performs a lookup in tree recursively
+
+        :dict: d - tree branch
+        :list: lis - list of strings to search for
+        :list: results - Collected hit results
+        :int: i - Index of lis
+        :bool: end - Indicates if last lookup was the end of a sequence
+
+        :returns a list of hit results
+        """
+        key = None
+
+        if i < len(lis):
+            key = lis[i].lower()
+        
+        if d.get(key):
+            results.append(d.get(key).get(self._ORIG))
+            root = d.get(key)
+            return self._recursive_lookup(
+                root, 
+                lis,
+                results,
+                i + 1,
+                root.get(self._END)
+            )
+        else:
+            if not end:
+                results = []
+            return results
 
     def lookup(self, path):
         """
-        Lookup key=path within tree
+        Lookup a path in the tree
+
+        :str: path - The path to search for
+
+        :returns The closest matching path in the tree if present else None
         """
-        return self.tree.get(path)
+        path_split = list(reversed(path.split('/')))
+        results = self._recursive_lookup(self.instance, path_split, [])
 
-    def find_path(self, path):
+        if not results:
+            return None
+
+        path_hit = '/'.join(reversed(results))
+
+        return path_hit
+
+    def _update(self, d, u):
         """
-        Find path based on the longest common substring 
-        between path/lookup results
+        Update a dictionary
+        :dict: d - Dictionary being updated
+        :dict: u - Dictionary being merged
+        """
+        for k, v in u.items():
+            if isinstance(v, collections.Mapping):
+                r = self._update(d.get(k, {}), v)
+                d[k] = r
+            else:
+                if k == self._END  and d.get(k) == True:
+                    pass
+                else:
+                    d[k] = u[k]
+        return d
 
-        Returns a tuple of 
-            longest_common_substring of path
-            extracted match from self.paths
+
+    def insert(self, path):
+        """
+        Insert a path into the tree
+
+        :str: path - The path to insert
         """
 
-        if not path:
-            return None, None
+        path_split = path.split('/')
+        root_key =  path_split[-1]
+        root = self.instance.get(root_key)
 
-        if path in self.paths_lis:
-            longest = path
-            match   = path
+        if not root:
+            u = self._list_to_nested_dict(path_split)
+            self.instance.update(u)
         else:
-            filename = path.split('/')[-1].lower()
-            hit      = self.lookup(filename)
-            if not hit:
-                return None, None
-            longest = longest_common_substring(path, hit)
+            u = self._list_to_nested_dict(path_split[:-1])
+            self.instance[root_key] = self._update(root, u)
 
-            # Remove slash for a better chance of match
-            longest_cleaned =  longest[1:] if longest.startswith('/') else longest
-
-            if longest_cleaned in self.paths_lis:
-                match = longest_cleaned
-            else:
-                match_index = hit.lower().find(longest_cleaned.lower())
-                match = _extract_match(hit, match_index)
-        return (longest_cleaned, match)
-
-    def construct_tree(self, paths):
+    def construct_tree(self, toc):
         """
-        Constructs a lookup tree from paths
+        Constructs a tree
 
-        :paths (str) A comma seperated string of paths
-
-        returns A tree instance
+        :str: toc - The table of contents
         """
-        self.paths = paths
-        self.paths_lis = paths.split(',')
-        for p in self.paths_lis:
-            filename = p.split('/')[-1].lower()
+        constructing = True
+        toc_index    = 1
 
-            # Check if filename has been handled
-            if self.lookup(filename) or len(filename) == 0:
-                pass
+        while constructing:
+            if toc_index < len(toc) - 1:
+                path = _extract_match(toc, toc_index)
+                if path:
+                    self.insert(path)
+                    toc_index = toc_index  + len(path) + 2
+                else:
+                    if toc[toc_index] == ',':
+                        toc_index += 1
             else:
-                # Find all instances where this particular
-                # filename occurs in paths
-                file_indexes = list(self.find_all(paths.lower(), filename))
-                files = list(map(lambda x: _extract_match(paths, x), file_indexes))
-                if files:
-                    self.tree[filename] = ','.join(files)
-        return self.tree
+                constructing = False
+                break
