@@ -112,8 +112,9 @@ class Tree:
         """
 
         path_split = path.split('/')
-        root_key =  path_split[-1]
+        root_key =  path_split[-1].lower()
         root = self.instance.get(root_key)
+
 
         if not root:
             u = self._list_to_nested_dict(path_split)
@@ -136,7 +137,7 @@ class Tree:
                 path = _extract_match(toc, toc_index)
                 if path:
                     self.insert(path)
-                    toc_index = toc_index  + len(path) + 2
+                    toc_index = toc_index  + len(path) + 1
                 else:
                     if toc[toc_index] == ',':
                         toc_index += 1
