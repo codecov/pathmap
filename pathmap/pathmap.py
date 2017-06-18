@@ -20,7 +20,9 @@ def clean_path(path):
 
 
 def _check_ancestors(path, match, ancestors):
-    # require N ancestors to be in common with original path and matched path
+    """
+    Require N ancestors to be in common with original path and matched path
+    """
     pl = path.lower()
     ml = match.lower()
     if pl == ml:
@@ -41,6 +43,7 @@ def _slash_pattern(pattern):
     else:
         return '%s/' % pattern
 
+
 def _resolve_path(tree, path, ancestors=None):
     """
     Resolve a path
@@ -55,20 +58,23 @@ def _resolve_path(tree, path, ancestors=None):
 
     new_path = tree.lookup(path)
 
-    if new_path and ancestors and not _check_ancestors(path, new_path, ancestors):
-        return None
-
     if new_path:
+        if ancestors and not _check_ancestors(path, new_path, ancestors):
+            # path ancestor count is not valud
+            return None
+
         return new_path
 
-    # not found
+    # path was not resolved
     return None
+
 
 def resolve_paths(toc, paths, ancestors=None):
     """
+    Returns generated of resolved filepath names
+
     :toc (str) e.g, ",real_path,another_real_path,"
     :paths (list) e.g. ["path", "another_path"]
-    returns generated of resolved filepath names
     """
     tree = Tree()
     tree.construct_tree(toc)
@@ -84,9 +90,8 @@ def resolve_paths(toc, paths, ancestors=None):
 
 def resolve_by_method(toc):
     """
-    returns a method that can be called with a path to resolve
+    Returns a method that can be called with a path to resolve
     """
-    # keep a cache of known changes
     tree = Tree()
     tree.construct_tree(toc)
 
