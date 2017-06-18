@@ -2,7 +2,6 @@
 from .pathmap import (
     clean_path,
     _check_ancestors,
-    _slash_pattern,
     _resolve_path,
     resolve_paths,
     resolve_by_method

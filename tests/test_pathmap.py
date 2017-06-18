@@ -12,7 +12,6 @@ import pytest
 
 from pathmap import (
     clean_path,
-    _slash_pattern,
     _extract_match,
     _resolve_path,
     _check_ancestors,
@@ -53,11 +52,6 @@ def test_clean_path():
     assert clean_path(path) == 'ms/style/directory'
 
 
-def test_slash_pattern():
-    has_slash = 'slash/'
-    assert _slash_pattern(has_slash) == 'slash/'
-
-
 def test_extract_match():
     toc = ',src/components/login.js,'
     index = toc.find('components')
@@ -72,6 +66,7 @@ def test_resolve_path():
     tree.construct_tree(toc)
     new_path  = _resolve_path(tree, path)
     assert new_path == 'src/components/login.js'
+
 
 def test_resolve_paths():
     resolved_paths = resolve_paths(toc, before)
@@ -98,6 +93,8 @@ def test_check_ancestors():
     assert _check_ancestors('a/b/c', 'x/b/c', 1) is True
     assert _check_ancestors('a/b/c', 'x/b/c', 2) is False
     assert _check_ancestors('a/b/c/d', 'X/B/C/D', 2) is True
+    assert _check_ancestors('a', 'b/a', 2) is True, 'original was missing ancestors'
+    assert _check_ancestors('a/b', 'z/a/b', 2) is True
 
 
 def test_resolve_paths_with_ancestors():
@@ -106,7 +103,7 @@ def test_resolve_paths_with_ancestors():
     tree.construct_tree(toc)
 
     # default, no ancestors ============================
-    paths    = ['z', 'R/z', 'R/y/z', 'x/y/z', 'w/x/y/z']
+    paths = ['z', 'R/z', 'R/y/z', 'x/y/z', 'w/x/y/z']
     expected = [None, None, None, 'x/y/z', 'x/y/z']
     resolved = list(resolve_paths(toc, paths))
     assert resolved  == expected
@@ -141,6 +138,7 @@ def test_path_should_not_resolve():
     path = _resolve_path(tree, path)
     assert path is None
 
+
 def test_path_should_not_resolve_case_insensative():
     resolvers = []
     toc = ',a/b/C,'
@@ -149,6 +147,7 @@ def test_path_should_not_resolve_case_insensative():
     tree.construct_tree(toc)
     path  = _resolve_path(tree, path)
     assert path == 'a/b/C'
+
 
 def test_resolve_path_shortest():
     tree = Tree()
