@@ -30,20 +30,6 @@ def _check_ancestors(path, match, ancestors):
     return ml.endswith('/'.join(pl.split('/')[(ancestors+1)*-1:]))
 
 
-def _slash_pattern(pattern):
-    """
-    Checks if pattern ends with a slash and appends one if slash is not present
-
-    :pattern (str) pattern added/removed
-
-    returns a pattern with slash
-    """
-    if pattern.endswith('/'):
-        return pattern
-    else:
-        return '%s/' % pattern
-
-
 def _resolve_path(tree, path, ancestors=None):
     """
     Resolve a path

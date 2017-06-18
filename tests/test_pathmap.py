@@ -12,7 +12,6 @@ import pytest
 
 from pathmap import (
     clean_path,
-    _slash_pattern,
     _extract_match,
     _resolve_path,
     _check_ancestors,
@@ -51,11 +50,6 @@ def test_clean_path():
     assert clean_path(path) == 'some very_long/directory name'
     path = 'ms\\style\\directory'
     assert clean_path(path) == 'ms/style/directory'
-
-
-def test_slash_pattern():
-    has_slash = 'slash/'
-    assert _slash_pattern(has_slash) == 'slash/'
 
 
 def test_extract_match():
