@@ -20,17 +20,12 @@ def clean_path(path):
 
 
 def _check_ancestors(path, match, ancestors):
-    anc = ancestors + 1
-    split_path = path.lower().split('/')
-    split_match = match.lower().split('/')
-
-    if len(split_path) < anc or len(split_match) < anc:
-        return False
-
-    path_ancestors = split_path[len(split_path) - anc:]
-    match_ancestors = split_match[len(split_match) - anc:]
-
-    return path_ancestors == match_ancestors
+    # require N ancestors to be in common with original path and matched path
+    pl = path.lower()
+    ml = match.lower()
+    if pl == ml:
+        return True
+    return ml.endswith('/'.join(pl.split('/')[(ancestors+1)*-1:]))
 
 
 def _slash_pattern(pattern):
@@ -57,7 +52,7 @@ def _resolve_path(tree, path, ancestors=None):
     returns new_path (str), pattern (list)
     """
     path = clean_path(path)
-    
+
     new_path = tree.lookup(path)
 
     if new_path and ancestors and not _check_ancestors(path, new_path, ancestors):

@@ -90,12 +90,14 @@ def test_resolve_by_method():
 
 
 def test_check_ancestors():
-    ancestors = 1
-    path = 'one/two/three'
-    match = 'four/two/three'
-    assert _check_ancestors(path, match, ancestors) is True
-    match = 'four/five/three'
-    assert _check_ancestors(path, match, ancestors) is False
+    assert _check_ancestors('a', 'a', 1) is True, 'matches'
+    assert _check_ancestors('A', 'a', 1) is True, 'matches case insensative'
+    assert _check_ancestors('a/B', 'a/B', 1) is True, 'matches'
+    assert _check_ancestors('A/B', 'a/b', 1) is True, 'matches case insensative'
+    assert _check_ancestors('b/b', 'a/b', 1) is False, 'does not match first ancestor'
+    assert _check_ancestors('a/b/c', 'x/b/c', 1) is True
+    assert _check_ancestors('a/b/c', 'x/b/c', 2) is False
+    assert _check_ancestors('a/b/c/d', 'X/B/C/D', 2) is True
 
 
 def test_resolve_paths_with_ancestors():
