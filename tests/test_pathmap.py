@@ -68,11 +68,17 @@ def test_resolve_path():
     assert new_path == 'src/components/login.js'
 
 
+def test_resolve_case():
+    tree = Tree()
+    tree.construct_tree(',Aa/Bb/cc,Aa/Bb/Cc,')
+    assert _resolve_path(tree, 'aa/bb/cc') == 'Aa/Bb/cc'
+    assert _resolve_path(tree, 'aa/bb/Cc') == 'Aa/Bb/Cc'
+
+
 def test_resolve_paths():
     resolved_paths = resolve_paths(toc, before)
     first = set([r for r in resolved_paths])
     second = set(after)
-
     assert first == second
 
 
