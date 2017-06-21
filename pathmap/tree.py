@@ -1,5 +1,9 @@
-from .utils import _extract_match
+import itertools
 import collections
+import operator
+
+from .utils import _extract_match
+from difflib import SequenceMatcher
 
 class Tree:
 
@@ -32,9 +36,24 @@ class Tree:
         d = {}
         for i in range(0, len(lis)):
             d[self._END] = True if i == 0 else False
-            d[self._ORIG] = lis[i]
+            d[self._ORIG] = ['/'.join(lis[:i+1])]
             d = {lis[i].lower(): d}
         return d
+
+    def _get_best_match(self, path, possibilities):
+        """
+        Given a path find how similar it is to all paths in possibilities
+
+        :str: path - A path part E.g.: a/b.py => a
+        :list: possibilities - Collected possibilities
+        """
+
+        # Map out similarity of possible paths with the path being looked up
+        similarity = list(map(lambda x: SequenceMatcher(None, path, x).ratio(), possibilities))
+        # Get the index, value of the most similar path
+        index, value = max(enumerate(similarity), key=operator.itemgetter(1))
+
+        return possibilities[index]
 
     def _recursive_lookup(self, d, lis, results, i = 0, end=False):
         """
@@ -46,15 +65,17 @@ class Tree:
         :int: i - Index of lis
         :bool: end - Indicates if last lookup was the end of a sequence
 
-        :returns a list of hit results
+        :returns a list of hit results if path is found in the tree
         """
         key = None
 
         if i < len(lis):
             key = lis[i].lower()
+
+        if i == 0:
+            results = d.get(key).get(self._ORIG)
         
         if d.get(key):
-            results.append(d.get(key).get(self._ORIG))
             root = d.get(key)
             return self._recursive_lookup(
                 root, 
@@ -76,13 +97,17 @@ class Tree:
 
         :returns The closest matching path in the tree if present else None
         """
+        path_hit = None
         path_split = list(reversed(path.split('/')))
         results = self._recursive_lookup(self.instance, path_split, [])
 
         if not results:
             return None
 
-        path_hit = '/'.join(reversed(results))
+        if len(results) == 1:
+            path_hit = results[0]
+        else:
+            path_hit = self._get_best_match(path, list(reversed(results)))
 
         return path_hit
 
@@ -99,6 +124,8 @@ class Tree:
             else:
                 if k == self._END  and d.get(k) == True:
                     pass
+                elif k == self._ORIG and d.get(k) and u.get(k):
+                    d[k] = d[k] + u[k]
                 else:
                     d[k] = u[k]
         return d
@@ -120,8 +147,8 @@ class Tree:
             u = self._list_to_nested_dict(path_split)
             self.instance.update(u)
         else:
-            u = self._list_to_nested_dict(path_split[:-1])
-            self.instance[root_key] = self._update(root, u)
+            u = self._list_to_nested_dict(path_split)
+            self.instance = self._update(self.instance, u)
 
     def construct_tree(self, toc):
         """
