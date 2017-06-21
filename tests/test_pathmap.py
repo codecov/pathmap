@@ -153,10 +153,3 @@ def test_path_should_not_resolve_case_insensative():
     tree.construct_tree(toc)
     path  = _resolve_path(tree, path)
     assert path == 'a/b/C'
-
-
-def test_resolve_path_shortest():
-    tree = Tree()
-    tree.construct_tree(',a/b/c.py,b/c.py,')
-    new_path = _resolve_path(tree, 'r/b/c.py')
-    assert new_path == 'b/c.py'

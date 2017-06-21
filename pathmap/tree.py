@@ -1,4 +1,3 @@
-import itertools
 import collections
 import operator
 
@@ -72,7 +71,7 @@ class Tree:
         if i < len(lis):
             key = lis[i].lower()
 
-        if i == 0:
+        if i == 0 and d.get(key):
             results = d.get(key).get(self._ORIG)
         
         if d.get(key):
