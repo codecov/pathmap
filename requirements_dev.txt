@@ -4,5 +4,4 @@ tox
 Sphinx
 pytest
 pytest-cov
-memory-profiler==0.47
 py>=1.4.29
