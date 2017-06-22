@@ -1,46 +1,8 @@
-ifeq ($(OSTYPE),cygwin)
-    CLEANUP=rm -f
-    TARGET_EXTENSION=out
-else ifeq ($(OS),Windows_NT)
-    CLEANUP=del /F /Q
-    TARGET_EXTENSION=exe
-else
-    CLEANUP=rm -f
-    TARGET_EXTENSION=out
-endif
+test:
+	py.test -v
 
-PATHU = Unity/src/
-PATHS = pathmap/
-PATHT = tests/c/
+benchmarks:
+	python tests/benchmarks.py
 
-SRCT = $(wildcard $(PATHT)*.c)
-SRCS = $(wildcard $(PATHS)*.c)
-SRCU = $(wildcard $(PATHU)*.c)
-
-PYTHON_INCLUDES = $(shell python-config --includes)
-
-C_COMPILER=gcc
-ifeq ($(shell uname -s), Darwin)
-C_COMPILER=clang
-endif
-
-CFLAGS = $(shell python-config --cflags)
-CFLAGS += -I $(PATHU)
-
-LDFLAGS = $(shell python-config --ldflags)
-
-install:
-	python setup.py install build_ext -i
-
-testpy:
-	py.test tests --cov=pathmap --cov-report=term-missing
-
-testc:
-	$(C_COMPILER) $(SRCT) $(SRCS) $(SRCU) $(CFLAGS) $(LDFLAGS) -o ctests.$(TARGET_EXTENSION) && ./ctests.$(TARGET_EXTENSION)
-
-clean:
-	$(CLEANUP) *.$(TARGET_EXTENSION)
-
-
-.PHONY: clean
-.PHONY: test
+profile:
+	python -m memory_profiler tests/profile.py

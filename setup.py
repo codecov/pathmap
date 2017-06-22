@@ -3,13 +3,6 @@
 
 from setuptools import setup
 
-from distutils.core import setup, Extension
-
-module1 = Extension(
-    'lcs', 
-    sources = ['pathmap/lcsmodule.c']
-)
-
 with open('README.md') as readme_file:
     readme = readme_file.read()
 
@@ -29,7 +22,6 @@ setup(
     author="Thordur Hermannsson",
     author_email='doddi@kott.is',
     url='https://github.com/codecov/pathma://github.com/codecov/pathmap',
-    ext_modules = [module1],
     packages=[
         'pathmap',
     ],

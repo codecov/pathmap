@@ -3,9 +3,6 @@ import time
 
 from pathmap.tree import Tree
 
-from lcs import longest_common_substring
-
- 
 class Timer():
  
     def __init__(self):
@@ -32,16 +29,14 @@ def get_file_fixture():
 def main():
     toc = ','.join(get_file_fixture())
     tree = Tree()
-    tree.construct_tree(toc)
-    print('Benchmark Tree::find_longest_common')
+    print('Benchmark Tree:construct_tree')
     with Timer():
-        longest = tree.find_longest_common('c:/projects/media-server/source/calldetailrecords/esncdr/esncdr.cpp')
-        print(longest)
-
-    print('Benchmark lcs::longest_common_substring')
+        tree.construct_tree(toc)
+    path = None
+    print('Benchmark Tree::lookup')
     with Timer():
-        longest = longest_common_substring('c:/projects/media-server/source/calldetailrecords/esncdr/esncdr.cpp', toc)
-        print(longest)
+        path = tree.lookup('c:/projects/media-server/source/calldetailrecords/esncdr/esncdr.cpp')
+    print(path)
 
 if __name__ == '__main__':
     main()

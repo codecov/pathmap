@@ -1,74 +1,170 @@
+import collections
+import operator
+
 from .utils import _extract_match
-from lcs import longest_common_substring
+from difflib import SequenceMatcher
+
 
 class Tree:
     def __init__(self, *args, **kwargs):
-        self.cache = {}
-        self.tree  = {}
-        self.paths = None
+        self.instance = {}
 
-    def find_all(self, a_str, sub):
-        """
-        Find all instances of substring within string
+        # Sequence end indicator
+        self._END = '\\*__ends__*//'
 
-        a_str (str) The string to search in
-        sub (str) The string to look for
+        # Original value indicator
+        self._ORIG = '\\*__orig__*//'
+
+    def _list_to_nested_dict(self, lis):
         """
-        start = 0
-        while True:
-            start = a_str.find(sub, start)
-            if start == -1: return
-            yield start
-            start += len(sub) # use start += 1 to find overlapping matches
+        Turns a list into a nested dict
+
+        E.g.:
+            ['a','b','c'] => { 'c' : { 'b' : { 'a' : {} } } }
+
+        extra data:
+
+            _end_ - Marks the end of the list
+            E.g.:
+                ['a','b'] => { 'b' : { 'a' : {}, '_end_': True}, '_end_': False}
+
+            _orig_ - The original value of the key/list item
+            E.g.:
+                ['A'] => { 'a' : {}, '_orig_': 'A', '_end_': True}
+        """
+        d = {}
+        for i in range(0, len(lis)):
+            d[self._END] = True if i == 0 else False
+            d[self._ORIG] = ['/'.join(lis[i:])]
+            d = {lis[i].lower(): d}
+        return d
+
+    def _get_best_match(self, path, possibilities):
+        """
+        Given a path find how similar it is to all paths in possibilities
+
+        :str: path - A path part E.g.: a/b.py => a
+        :list: possibilities - Collected possibilities
+        """
+
+        # Map out similarity of possible paths with the path being looked up
+        similarity = list(map(lambda x: SequenceMatcher(None, path, x).ratio(), possibilities))
+
+        # Get the index, value of the most similar path
+        index, value = max(enumerate(similarity), key=operator.itemgetter(1))
+
+        return possibilities[index]
+
+    def _recursive_lookup(self, d, lis, results, i=0, end=False):
+        """
+        Performs a lookup in tree recursively
+
+        :dict: d - tree branch
+        :list: lis - list of strings to search for
+        :list: results - Collected hit results
+        :int: i - Index of lis
+        :bool: end - Indicates if last lookup was the end of a sequence
+
+        :returns a list of hit results if path is found in the tree
+        """
+        key = None
+
+        if i < len(lis):
+            key = lis[i].lower()
+
+        if d.get(key):
+            root = d.get(key)
+            results = d.get(key).get(self._ORIG)
+            return self._recursive_lookup(
+                root,
+                lis,
+                results,
+                i + 1,
+                root.get(self._END)
+            )
+        else:
+            if not end:
+                results = []
+            return results
 
     def lookup(self, path):
         """
-        Lookup key=path within tree
+        Lookup a path in the tree
+
+        :str: path - The path to search for
+
+        :returns The closest matching path in the tree if present else None
         """
-        return self.tree.get(path)
+        path_hit = None
+        path_split = list(reversed(path.split('/')))
+        results = self._recursive_lookup(self.instance, path_split, [])
 
-    def find_path(self, path):
+        if not results:
+            return None
+
+        if len(results) == 1:
+            path_hit = results[0]
+        else:
+            path_hit = self._get_best_match(path, list(reversed(results)))
+
+        return path_hit
+
+    def _update(self, d, u):
         """
-        Find path based on the longest common substring 
-        between path/lookup results
-
-        Returns a tuple of 
-            longest_common_substring
-            extracted match from self.paths
+        Update a dictionary
+        :dict: d - Dictionary being updated
+        :dict: u - Dictionary being merged
         """
-
-        if not path:
-            return None, None
-
-        filename = path.split('/')[-1].lower()
-        hit      = self.lookup(filename)
-        if not hit:
-            return None, None
-        longest = longest_common_substring(path, hit)
-        match_index = hit.lower().find(longest.lower())
-        return (longest, _extract_match(hit, match_index))
-
-    def construct_tree(self, paths):
-        """
-        Constructs a lookup tree from paths
-
-        :paths (str) A comma seperated string of paths
-
-        returns A tree instance
-        """
-        self.paths = paths
-        paths_lis = paths.split(',')
-        for p in paths_lis:
-            filename = p.split('/')[-1].lower()
-
-            # Check if filename has been handled
-            if self.lookup(filename) or len(filename) == 0:
-                pass
+        for k, v in u.items():
+            if isinstance(v, collections.Mapping):
+                r = self._update(d.get(k, {}), v)
+                d[k] = r
             else:
-                # Find all instances where this particular
-                # filename occurs in paths
-                file_indexes = list(self.find_all(paths.lower(), filename))
-                files = list(map(lambda x: _extract_match(paths, x), file_indexes))
-                if files:
-                    self.tree[filename] = ','.join(files)
-        return self.tree
+                if k == self._END and d.get(k) is True:
+                    pass
+                elif k == self._ORIG and d.get(k) and u.get(k):
+                    if d[k] != u[k]:
+                        d[k] = d[k] + u[k]
+                else:
+                    d[k] = u[k]
+        return d
+
+    def insert(self, path):
+        """
+        Insert a path into the tree
+
+        :str: path - The path to insert
+        """
+
+        path_split = path.split('/')
+        root_key = path_split[-1].lower()
+        root = self.instance.get(root_key)
+
+        if not root:
+            u = self._list_to_nested_dict(path_split)
+            self.instance.update(u)
+        else:
+            u = self._list_to_nested_dict(path_split)
+            self.instance = self._update(self.instance, u)
+
+    def construct_tree(self, toc):
+        """
+        Constructs a tree
+
+        :str: toc - The table of contents
+        """
+        constructing = True
+        toc_index = 1
+
+        while constructing:
+            if toc_index < len(toc) - 1:
+                path = _extract_match(toc, toc_index)
+                if path:
+                    self.insert(path)
+                    toc_index = toc_index + len(path) + 1
+                else:
+                    if toc[toc_index] == ',':
+                        toc_index += 1
+            else:
+                constructing = False
+                break
