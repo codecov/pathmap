@@ -2,6 +2,7 @@ from pathmap import resolve_paths, resolve_path_if_long
 
 from paths import paths, get_toc
 
+
 def compare():
     wrong = 0
     toc = get_toc()
@@ -15,5 +16,3 @@ def compare():
 
     print('%i paths correct' % (len(paths) - wrong))
     print('%i paths incorrect' % wrong)
-
-

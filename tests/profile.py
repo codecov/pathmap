@@ -1,5 +1,6 @@
 from pathmap.tree import Tree
 
+
 def get_file_fixture(path):
     files = []
     with open(path, 'r') as input_data:
@@ -10,6 +11,7 @@ def get_file_fixture(path):
 
 
 toc = get_file_fixture('tests/test_files/toc_benchmark.txt')
+
 
 @profile
 def construct_tree():

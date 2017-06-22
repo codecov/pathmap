@@ -17,6 +17,4 @@ def _extract_match(toc, index, seperator=','):
     if end_index == length - 1:
         end_index += 1
     match = toc[start_index+1:end_index].replace(seperator, '')
-
     return match
-

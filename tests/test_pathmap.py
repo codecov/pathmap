@@ -64,7 +64,7 @@ def test_resolve_path():
     path = 'Src/components/login.js'
     tree = Tree()
     tree.construct_tree(toc)
-    new_path  = _resolve_path(tree, path)
+    new_path = _resolve_path(tree, path)
     assert new_path == 'src/components/login.js'
 
 
@@ -112,7 +112,7 @@ def test_resolve_paths_with_ancestors():
     paths = ['z', 'R/z', 'R/y/z', 'x/y/z', 'w/x/y/z']
     expected = [None, None, None, 'x/y/z', 'x/y/z']
     resolved = list(resolve_paths(toc, paths))
-    assert resolved  == expected
+    assert resolved == expected
 
     # one ancestors ====================================
     paths = ['z', 'R/z', 'R/y/z', 'x/y/z', 'w/x/y/z']
@@ -151,5 +151,5 @@ def test_path_should_not_resolve_case_insensative():
     path = 'a/B/c'
     tree = Tree()
     tree.construct_tree(toc)
-    path  = _resolve_path(tree, path)
+    path = _resolve_path(tree, path)
     assert path == 'a/b/C'

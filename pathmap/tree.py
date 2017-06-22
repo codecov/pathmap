@@ -4,8 +4,8 @@ import operator
 from .utils import _extract_match
 from difflib import SequenceMatcher
 
-class Tree:
 
+class Tree:
     def __init__(self, *args, **kwargs):
         self.instance = {}
 
@@ -17,7 +17,7 @@ class Tree:
 
     def _list_to_nested_dict(self, lis):
         """
-        Turns a list into a nested dict 
+        Turns a list into a nested dict
 
         E.g.:
             ['a','b','c'] => { 'c' : { 'b' : { 'a' : {} } } }
@@ -55,7 +55,7 @@ class Tree:
 
         return possibilities[index]
 
-    def _recursive_lookup(self, d, lis, results, i = 0, end=False):
+    def _recursive_lookup(self, d, lis, results, i=0, end=False):
         """
         Performs a lookup in tree recursively
 
@@ -76,7 +76,7 @@ class Tree:
             root = d.get(key)
             results = d.get(key).get(self._ORIG)
             return self._recursive_lookup(
-                root, 
+                root,
                 lis,
                 results,
                 i + 1,
@@ -120,7 +120,7 @@ class Tree:
                 r = self._update(d.get(k, {}), v)
                 d[k] = r
             else:
-                if k == self._END  and d.get(k) == True:
+                if k == self._END and d.get(k) is True:
                     pass
                 elif k == self._ORIG and d.get(k) and u.get(k):
                     if d[k] != u[k]:
@@ -128,7 +128,6 @@ class Tree:
                 else:
                     d[k] = u[k]
         return d
-
 
     def insert(self, path):
         """
@@ -138,9 +137,8 @@ class Tree:
         """
 
         path_split = path.split('/')
-        root_key =  path_split[-1].lower()
+        root_key = path_split[-1].lower()
         root = self.instance.get(root_key)
-
 
         if not root:
             u = self._list_to_nested_dict(path_split)
@@ -156,14 +154,14 @@ class Tree:
         :str: toc - The table of contents
         """
         constructing = True
-        toc_index    = 1
+        toc_index = 1
 
         while constructing:
             if toc_index < len(toc) - 1:
                 path = _extract_match(toc, toc_index)
                 if path:
                     self.insert(path)
-                    toc_index = toc_index  + len(path) + 1
+                    toc_index = toc_index + len(path) + 1
                 else:
                     if toc[toc_index] == ',':
                         toc_index += 1
