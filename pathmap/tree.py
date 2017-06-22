@@ -35,7 +35,7 @@ class Tree:
         d = {}
         for i in range(0, len(lis)):
             d[self._END] = True if i == 0 else False
-            d[self._ORIG] = ['/'.join(lis[:i+1])]
+            d[self._ORIG] = ['/'.join(lis[i:])]
             d = {lis[i].lower(): d}
         return d
 
@@ -49,6 +49,7 @@ class Tree:
 
         # Map out similarity of possible paths with the path being looked up
         similarity = list(map(lambda x: SequenceMatcher(None, path, x).ratio(), possibilities))
+
         # Get the index, value of the most similar path
         index, value = max(enumerate(similarity), key=operator.itemgetter(1))
 
@@ -71,11 +72,9 @@ class Tree:
         if i < len(lis):
             key = lis[i].lower()
 
-        if i == 0 and d.get(key):
-            results = d.get(key).get(self._ORIG)
-        
         if d.get(key):
             root = d.get(key)
+            results = d.get(key).get(self._ORIG)
             return self._recursive_lookup(
                 root, 
                 lis,
@@ -124,7 +123,8 @@ class Tree:
                 if k == self._END  and d.get(k) == True:
                     pass
                 elif k == self._ORIG and d.get(k) and u.get(k):
-                    d[k] = d[k] + u[k]
+                    if d[k] != u[k]:
+                        d[k] = d[k] + u[k]
                 else:
                     d[k] = u[k]
         return d
