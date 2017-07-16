@@ -72,9 +72,9 @@ class Tree:
         if i < len(lis):
             key = lis[i].lower()
 
-        if d.get(key):
-            root = d.get(key)
-            results = d.get(key).get(self._ORIG)
+        root = d.get(key)
+        if root:
+            results = root.get(self._ORIG)
             return self._recursive_lookup(
                 root,
                 lis,
