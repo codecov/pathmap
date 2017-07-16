@@ -90,6 +90,15 @@ def test_resolve_by_method():
     assert first == second
 
 
+def test_resolve_path_when_to_short(self):
+    assert resolve_paths(',a/b/c,', ['b/c'], 0).next() == 'a/b/c'
+    assert resolve_paths(',a/b/c,', ['b/c'], 1).next() == 'a/b/c'
+
+
+def test_resolve_path_when_to_long(self):
+    assert resolve_paths(',a/b/c,', ['z/y/b/c'], 1).next() == 'a/b/c'
+
+
 def test_check_ancestors():
     assert _check_ancestors('a', 'a', 1) is True, 'matches'
     assert _check_ancestors('A', 'a', 1) is True, 'matches case insensative'
