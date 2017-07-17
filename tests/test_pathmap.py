@@ -79,8 +79,6 @@ def test_resolve_paths():
     resolved_paths = resolve_paths(toc, before)
     first = set([r for r in resolved_paths])
     second = set(after)
-    print(first)
-    print(second)
     assert first == second
 
 
