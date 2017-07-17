@@ -55,6 +55,23 @@ class Tree:
 
         return possibilities[index]
 
+    def _drill(self, d, results):
+        """
+        Drill down a branch of a tree.
+        Collects results until a ._END is reached.
+
+        :returns - A list containing a possible path or None
+        """
+        if not d or d.get(self._ORIG) and len(d.get(self._ORIG)) > 1:
+            return None
+
+        root = d.get(list(d.keys())[0])
+
+        if root.get(self._END):
+            return root.get(self._ORIG)
+        else:
+            return self._drill(root, results)
+
     def _recursive_lookup(self, d, lis, results, i=0, end=False):
         """
         Performs a lookup in tree recursively
@@ -83,8 +100,11 @@ class Tree:
                 root.get(self._END)
             )
         else:
-            if not end:
+            if not end and results:
                 results = []
+                next_path = self._drill(d, results)
+                if next_path:
+                    results.extend(next_path)
             return results
 
     def lookup(self, path):
@@ -92,7 +112,7 @@ class Tree:
         Lookup a path in the tree
 
         :str: path - The path to search for
-
+    
         :returns The closest matching path in the tree if present else None
         """
         path_hit = None
