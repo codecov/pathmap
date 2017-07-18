@@ -21,16 +21,6 @@ class Tree:
 
         E.g.:
             ['a','b','c'] => { 'c' : { 'b' : { 'a' : {} } } }
-
-        extra data:
-
-            _end_ - Marks the end of the list
-            E.g.:
-                ['a','b'] => { 'b' : { 'a' : {}, '_end_': True}, '_end_': False}
-
-            _orig_ - The original value of the key/list item
-            E.g.:
-                ['A'] => { 'a' : {}, '_orig_': 'A', '_end_': True}
         """
         d = {}
         for i in range(0, len(lis)):
@@ -129,7 +119,7 @@ class Tree:
 
         return path_hit
 
-    def _update(self, d, u):
+    def update(self, d, u):
         """
         Update a dictionary
         :dict: d - Dictionary being updated
@@ -137,7 +127,7 @@ class Tree:
         """
         for k, v in u.items():
             if isinstance(v, collections.Mapping):
-                r = self._update(d.get(k, {}), v)
+                r = self.update(d.get(k, {}), v)
                 d[k] = r
             else:
                 if k == self._END and d.get(k) is True:
@@ -165,7 +155,7 @@ class Tree:
             self.instance.update(u)
         else:
             u = self._list_to_nested_dict(path_split)
-            self.instance = self._update(self.instance, u)
+            self.instance = self.update(self.instance, u)
 
     def construct_tree(self, toc):
         """
