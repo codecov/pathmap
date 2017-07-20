@@ -136,6 +136,11 @@ def test_resolve_paths_with_ancestors():
     assert set(resolved) == set(expected)
 
 
+def test_resolving():
+    assert list(resolve_paths(',a/b/c,a/r/c,c,', ['r/c'], 1)) == ['a/r/c']
+    assert list(resolve_paths(',a/b/c,a/r/c,c,', ['r/c'])) == ['a/r/c']
+
+
 def test_case_sensitive_ancestors():
     toc = ',src/HeapDump/GCHeapDump.cs,'
     tree = Tree()

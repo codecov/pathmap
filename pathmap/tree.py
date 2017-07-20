@@ -102,7 +102,7 @@ class Tree:
         Lookup a path in the tree
 
         :str: path - The path to search for
-    
+
         :returns The closest matching path in the tree if present else None
         """
         path_hit = None
