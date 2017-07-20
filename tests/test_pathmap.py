@@ -110,6 +110,7 @@ def test_check_ancestors():
     assert _check_ancestors('a/b/c/d', 'X/B/C/D', 2) is True
     assert _check_ancestors('a', 'b/a', 2) is True, 'original was missing ancestors'
     assert _check_ancestors('a/b', 'z/a/b', 2) is True
+    assert _check_ancestors('b', 'a/b', 1) is True
 
 
 def test_resolve_paths_with_ancestors():
@@ -139,6 +140,7 @@ def test_resolve_paths_with_ancestors():
 def test_resolving():
     assert list(resolve_paths(',a/b/c,a/r/c,c,', ['r/c'], 1)) == ['a/r/c']
     assert list(resolve_paths(',a/b/c,a/r/c,c,', ['r/c'])) == ['a/r/c']
+    assert list(resolve_paths(',a/b,a/b/c/d,x/y,', ['c/d']), 1) = ['a/b/c/d']
 
 
 def test_with_plus():
