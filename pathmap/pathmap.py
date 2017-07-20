@@ -27,6 +27,8 @@ def _check_ancestors(path, match, ancestors):
     ml = match.lower()
     if pl == ml:
         return True
+    if len(ml.split('/')) < len(pl.split('/')) and pl.endswith(ml):
+        return True
     return ml.endswith('/'.join(pl.split('/')[(ancestors+1)*-1:]))
 
 
