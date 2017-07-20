@@ -21,16 +21,6 @@ class Tree:
 
         E.g.:
             ['a','b','c'] => { 'c' : { 'b' : { 'a' : {} } } }
-
-        extra data:
-
-            _end_ - Marks the end of the list
-            E.g.:
-                ['a','b'] => { 'b' : { 'a' : {}, '_end_': True}, '_end_': False}
-
-            _orig_ - The original value of the key/list item
-            E.g.:
-                ['A'] => { 'a' : {}, '_orig_': 'A', '_end_': True}
         """
         d = {}
         for i in range(0, len(lis)):
@@ -54,6 +44,23 @@ class Tree:
         index, value = max(enumerate(similarity), key=operator.itemgetter(1))
 
         return possibilities[index]
+
+    def _drill(self, d, results):
+        """
+        Drill down a branch of a tree.
+        Collects results until a ._END is reached.
+
+        :returns - A list containing a possible path or None
+        """
+        if not d or d.get(self._ORIG) and len(d.get(self._ORIG)) > 1:
+            return None
+
+        root = d.get(list(d.keys())[0])
+
+        if root.get(self._END):
+            return root.get(self._ORIG)
+        else:
+            return self._drill(root, results)
 
     def _recursive_lookup(self, d, lis, results, i=0, end=False):
         """
@@ -83,8 +90,11 @@ class Tree:
                 root.get(self._END)
             )
         else:
-            if not end:
+            if not end and results:
                 results = []
+                next_path = self._drill(d, results)
+                if next_path:
+                    results.extend(next_path)
             return results
 
     def lookup(self, path):
@@ -92,7 +102,7 @@ class Tree:
         Lookup a path in the tree
 
         :str: path - The path to search for
-
+    
         :returns The closest matching path in the tree if present else None
         """
         path_hit = None
@@ -109,7 +119,7 @@ class Tree:
 
         return path_hit
 
-    def _update(self, d, u):
+    def update(self, d, u):
         """
         Update a dictionary
         :dict: d - Dictionary being updated
@@ -117,7 +127,7 @@ class Tree:
         """
         for k, v in u.items():
             if isinstance(v, collections.Mapping):
-                r = self._update(d.get(k, {}), v)
+                r = self.update(d.get(k, {}), v)
                 d[k] = r
             else:
                 if k == self._END and d.get(k) is True:
@@ -145,7 +155,7 @@ class Tree:
             self.instance.update(u)
         else:
             u = self._list_to_nested_dict(path_split)
-            self.instance = self._update(self.instance, u)
+            self.instance = self.update(self.instance, u)
 
     def construct_tree(self, toc):
         """

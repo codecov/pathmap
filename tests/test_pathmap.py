@@ -90,13 +90,13 @@ def test_resolve_by_method():
     assert first == second
 
 
-def test_resolve_path_when_to_short(self):
-    assert resolve_paths(',a/b/c,', ['b/c'], 0).next() == 'a/b/c'
-    assert resolve_paths(',a/b/c,', ['b/c'], 1).next() == 'a/b/c'
+def test_resolve_path_when_to_short():
+    assert next(resolve_paths(',a/b/c,', ['b/c'], 0 )) == 'a/b/c'
+    assert next(resolve_paths(',a/b/c,', ['b/c'], 1)) == 'a/b/c'
 
 
-def test_resolve_path_when_to_long(self):
-    assert resolve_paths(',a/b/c,', ['z/y/b/c'], 1).next() == 'a/b/c'
+def test_resolve_path_when_to_long():
+    assert next(resolve_paths(',a/b/c,', ['z/y/b/c'], 1)) == 'a/b/c'
 
 
 def test_check_ancestors():
@@ -119,13 +119,13 @@ def test_resolve_paths_with_ancestors():
 
     # default, no ancestors ============================
     paths = ['z', 'R/z', 'R/y/z', 'x/y/z', 'w/x/y/z']
-    expected = [None, None, None, 'x/y/z', 'x/y/z']
+    expected = ['x/y/z', 'x/y/z', 'x/y/z', 'x/y/z', 'x/y/z']
     resolved = list(resolve_paths(toc, paths))
     assert resolved == expected
 
     # one ancestors ====================================
     paths = ['z', 'R/z', 'R/y/z', 'x/y/z', 'w/x/y/z']
-    expected = [None, None, None, 'x/y/z', 'x/y/z']
+    expected = [None, None, 'x/y/z', 'x/y/z', 'x/y/z']
     resolved = list(resolve_paths(toc, paths, 1))
     assert set(resolved) == set(expected)
 
