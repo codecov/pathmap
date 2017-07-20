@@ -3,9 +3,6 @@
 
 from setuptools import setup
 
-with open('README.md') as readme_file:
-    readme = readme_file.read()
-
 requirements = [
     # TODO: put package requirements here
 ]
@@ -16,9 +13,8 @@ test_requirements = [
 
 setup(
     name='pathmap',
-    version='0.1.2',
+    version='0.1.3',
     description="Path resolver",
-    long_description=readme + '\n\n',
     author="Thordur Hermannsson",
     author_email='doddi@kott.is',
     url='https://github.com/codecov/pathma://github.com/codecov/pathmap',
