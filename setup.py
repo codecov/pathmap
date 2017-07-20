@@ -16,7 +16,7 @@ test_requirements = [
 
 setup(
     name='pathmap',
-    version='0.1.1',
+    version='0.1.2',
     description="Path resolver",
     long_description=readme + '\n\n',
     author="Thordur Hermannsson",

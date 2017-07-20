@@ -7,11 +7,11 @@ from .pathmap import (
     resolve_by_method
 )
 
-from .utils import  (
+from .utils import (
     _extract_match
 )
 
 from .tree import Tree
 
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
