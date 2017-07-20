@@ -91,7 +91,7 @@ def test_resolve_by_method():
 
 
 def test_resolve_path_when_to_short():
-    assert next(resolve_paths(',a/b/c,', ['b/c'], 0 )) == 'a/b/c'
+    assert next(resolve_paths(',a/b/c,', ['b/c'], 0)) == 'a/b/c'
     assert next(resolve_paths(',a/b/c,', ['b/c'], 1)) == 'a/b/c'
 
 
@@ -139,6 +139,11 @@ def test_resolve_paths_with_ancestors():
 def test_resolving():
     assert list(resolve_paths(',a/b/c,a/r/c,c,', ['r/c'], 1)) == ['a/r/c']
     assert list(resolve_paths(',a/b/c,a/r/c,c,', ['r/c'])) == ['a/r/c']
+
+
+def test_with_plus():
+    assert list(resolve_paths(',b+c,', ['b+c'])) == ['b+c']
+    assert list(resolve_paths(',a/b+c,', ['b+c'])) == ['a/b+c']
 
 
 def test_case_sensitive_ancestors():
