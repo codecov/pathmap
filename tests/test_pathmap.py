@@ -140,7 +140,7 @@ def test_resolve_paths_with_ancestors():
 def test_resolving():
     assert list(resolve_paths(',a/b/c,a/r/c,c,', ['r/c'], 1)) == ['a/r/c']
     assert list(resolve_paths(',a/b/c,a/r/c,c,', ['r/c'])) == ['a/r/c']
-    assert list(resolve_paths(',a/b,a/b/c/d,x/y,', ['c/d']), 1) = ['a/b/c/d']
+    assert list(resolve_paths(',a/b,a/b/c/d,x/y,', ['c/d'], 1)) == ['a/b/c/d']
 
 
 def test_with_plus():
@@ -174,3 +174,7 @@ def test_path_should_not_resolve_case_insensative():
     tree.construct_tree(toc)
     path = _resolve_path(tree, path)
     assert path == 'a/b/C'
+
+def test_ancestors_original_missing():
+    results = list(resolve_paths(',shorter.h,', ['a/long/path/shorter.h'], 1))
+    assert results == ['shorter.h']
