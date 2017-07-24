@@ -44,7 +44,7 @@ def _resolve_path(tree, path, ancestors=None):
     """
     path = clean_path(path)
 
-    new_path = tree.lookup(path)
+    new_path = tree.lookup(path, ancestors)
 
     if new_path:
         if ancestors and not _check_ancestors(path, new_path, ancestors):

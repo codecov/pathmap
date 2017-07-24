@@ -178,3 +178,11 @@ def test_path_should_not_resolve_case_insensative():
 def test_ancestors_original_missing():
     results = list(resolve_paths(',shorter.h,', ['a/long/path/shorter.h'], 1))
     assert results == ['shorter.h']
+
+def test_ancestors_absolute_path():
+    toc = ',examples/ChurchNumerals.scala,tests/src/test/scala/at/logic/gapt/examples/ChurchNumerals.scala,'
+    paths = ['/home/travis/build/gapt/gapt/examples/ChurchNumerals.scala']
+    resolved = list(resolve_paths(toc, paths, 1))
+
+    assert resolved == ['examples/ChurchNumerals.scala']
+

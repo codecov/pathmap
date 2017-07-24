@@ -62,7 +62,7 @@ class Tree:
         else:
             return self._drill(root, results)
 
-    def _recursive_lookup(self, d, lis, results, i=0, end=False):
+    def _recursive_lookup(self, d, lis, results, i=0, end=False, match=False):
         """
         Performs a lookup in tree recursively
 
@@ -71,6 +71,7 @@ class Tree:
         :list: results - Collected hit results
         :int: i - Index of lis
         :bool: end - Indicates if last lookup was the end of a sequence
+        :bool: match - Indicates if filename has any match in tree
 
         :returns a list of hit results if path is found in the tree
         """
@@ -81,23 +82,24 @@ class Tree:
 
         root = d.get(key)
         if root:
-            results = root.get(self._ORIG)
+            if root.get(self._END):
+                results = root.get(self._ORIG)
             return self._recursive_lookup(
                 root,
                 lis,
                 results,
                 i + 1,
-                root.get(self._END)
+                root.get(self._END),
+                True
             )
         else:
-            if not end and results:
-                results = []
+            if not end and match:
                 next_path = self._drill(d, results)
                 if next_path:
                     results.extend(next_path)
             return results
 
-    def lookup(self, path):
+    def lookup(self, path, ancestors=None):
         """
         Lookup a path in the tree
 
@@ -115,7 +117,12 @@ class Tree:
         if len(results) == 1:
             path_hit = results[0]
         else:
-            path_hit = self._get_best_match(path, list(reversed(results)))
+            if path.replace('.','').startswith('/') and ancestors:
+                path_lengths = list(map(lambda x: len(x), results))
+                closest_length = min(path_lengths, key=lambda x:abs(x-ancestors))
+                path_hit = next(x for x in results if len(x) == closest_length)
+            else:
+                path_hit = self._get_best_match(path, list(reversed(results)))
 
         return path_hit
 
