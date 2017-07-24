@@ -38,7 +38,12 @@ class Tree:
         """
 
         # Map out similarity of possible paths with the path being looked up
-        similarity = list(map(lambda x: SequenceMatcher(None, path, x).ratio(), possibilities))
+        similarity = list(
+            map(
+                lambda x: SequenceMatcher(None, path, x).ratio(),
+                possibilities
+            )
+        )
 
         # Get the index, value of the most similar path
         index, value = max(enumerate(similarity), key=operator.itemgetter(1))
@@ -55,7 +60,10 @@ class Tree:
         if not d or d.get(self._ORIG) and len(d.get(self._ORIG)) > 1:
             return None
 
-        root = d.get(list(d.keys())[0])
+        root_key = next(
+            x for x in d.keys() if x != self._ORIG and x != self._END
+        )
+        root = d.get(root_key)
 
         if root.get(self._END):
             return root.get(self._ORIG)
@@ -117,9 +125,11 @@ class Tree:
         if len(results) == 1:
             path_hit = results[0]
         else:
-            if path.replace('.','').startswith('/') and ancestors:
+            if path.replace('.', '').startswith('/') and ancestors:
                 path_lengths = list(map(lambda x: len(x), results))
-                closest_length = min(path_lengths, key=lambda x:abs(x-ancestors))
+                closest_length = min(
+                    path_lengths, key=lambda x: abs(x-ancestors)
+                )
                 path_hit = next(x for x in results if len(x) == closest_length)
             else:
                 path_hit = self._get_best_match(path, list(reversed(results)))
