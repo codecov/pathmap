@@ -14,4 +14,4 @@ from .utils import (
 from .tree import Tree
 
 
-__version__ = '0.1.3'
+__version__ = '0.1.4'
