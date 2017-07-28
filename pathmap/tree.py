@@ -58,11 +58,11 @@ class Tree:
         :returns - A list containing a possible path or None
         """
         root_keys = [x for x in d.keys() if x != self._ORIG and x != self._END]
-        if len(root_keys) > 1:
+
+        if len(root_keys) > 1 or not root_keys:
             return None
 
         root_key = root_keys[0]
-
         root = d.get(root_key)
 
         if root.get(self._END):
