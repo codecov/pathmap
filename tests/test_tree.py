@@ -37,6 +37,14 @@ class TestTree(object):
         nested = self.tree._list_to_nested_dict(['a','b','c'])
         assert self.tree._drill(nested, []) == ['a/b/c']
 
+    def test_drill_multiple_possible_paths(self):
+        toc = ',src/list.rs,benches/list.rs,'
+        self.tree.construct_tree(toc)
+
+        branch = self.tree.instance.get('list.rs')
+        results = []
+        assert self.tree._drill(branch, results) == None
+
     def test_recursive_lookup(self):
         toc  = ',one/two/three.py,'
         path = 'one/two/three.py'
