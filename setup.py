@@ -13,7 +13,7 @@ test_requirements = [
 
 setup(
     name='pathmap',
-    version='0.1.4',
+    version='0.1.5',
     description="Path resolver",
     author="Thordur Hermannsson",
     author_email='doddi@kott.is',
